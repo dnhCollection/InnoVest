@@ -1,0 +1,426 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2BDFC7781BB462F900E93ACC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDFC7771BB462F900E93ACC /* AppDelegate.swift */; };
+		2BDFC77A1BB462F900E93ACC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDFC7791BB462F900E93ACC /* ViewController.swift */; };
+		2BDFC77D1BB462F900E93ACC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2BDFC77B1BB462F900E93ACC /* Main.storyboard */; };
+		2BDFC77F1BB462F900E93ACC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2BDFC77E1BB462F900E93ACC /* Images.xcassets */; };
+		2BDFC7821BB462F900E93ACC /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2BDFC7801BB462F900E93ACC /* LaunchScreen.xib */; };
+		2BDFC78E1BB462F900E93ACC /* InnoVestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDFC78D1BB462F900E93ACC /* InnoVestTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2BDFC7881BB462F900E93ACC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2BDFC76A1BB462F900E93ACC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2BDFC7711BB462F900E93ACC;
+			remoteInfo = InnoVest;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		2BDFC7721BB462F900E93ACC /* InnoVest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InnoVest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2BDFC7761BB462F900E93ACC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2BDFC7771BB462F900E93ACC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		2BDFC7791BB462F900E93ACC /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		2BDFC77C1BB462F900E93ACC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		2BDFC77E1BB462F900E93ACC /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		2BDFC7811BB462F900E93ACC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		2BDFC7871BB462F900E93ACC /* InnoVestTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = InnoVestTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2BDFC78C1BB462F900E93ACC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2BDFC78D1BB462F900E93ACC /* InnoVestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InnoVestTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2BDFC76F1BB462F900E93ACC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2BDFC7841BB462F900E93ACC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2BDFC7691BB462F900E93ACC = {
+			isa = PBXGroup;
+			children = (
+				2BDFC7741BB462F900E93ACC /* InnoVest */,
+				2BDFC78A1BB462F900E93ACC /* InnoVestTests */,
+				2BDFC7731BB462F900E93ACC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2BDFC7731BB462F900E93ACC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2BDFC7721BB462F900E93ACC /* InnoVest.app */,
+				2BDFC7871BB462F900E93ACC /* InnoVestTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2BDFC7741BB462F900E93ACC /* InnoVest */ = {
+			isa = PBXGroup;
+			children = (
+				2BDFC7771BB462F900E93ACC /* AppDelegate.swift */,
+				2BDFC7791BB462F900E93ACC /* ViewController.swift */,
+				2BDFC77B1BB462F900E93ACC /* Main.storyboard */,
+				2BDFC77E1BB462F900E93ACC /* Images.xcassets */,
+				2BDFC7801BB462F900E93ACC /* LaunchScreen.xib */,
+				2BDFC7751BB462F900E93ACC /* Supporting Files */,
+			);
+			path = InnoVest;
+			sourceTree = "<group>";
+		};
+		2BDFC7751BB462F900E93ACC /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				2BDFC7761BB462F900E93ACC /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		2BDFC78A1BB462F900E93ACC /* InnoVestTests */ = {
+			isa = PBXGroup;
+			children = (
+				2BDFC78D1BB462F900E93ACC /* InnoVestTests.swift */,
+				2BDFC78B1BB462F900E93ACC /* Supporting Files */,
+			);
+			path = InnoVestTests;
+			sourceTree = "<group>";
+		};
+		2BDFC78B1BB462F900E93ACC /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				2BDFC78C1BB462F900E93ACC /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2BDFC7711BB462F900E93ACC /* InnoVest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2BDFC7911BB462F900E93ACC /* Build configuration list for PBXNativeTarget "InnoVest" */;
+			buildPhases = (
+				2BDFC76E1BB462F900E93ACC /* Sources */,
+				2BDFC76F1BB462F900E93ACC /* Frameworks */,
+				2BDFC7701BB462F900E93ACC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = InnoVest;
+			productName = InnoVest;
+			productReference = 2BDFC7721BB462F900E93ACC /* InnoVest.app */;
+			productType = "com.apple.product-type.application";
+		};
+		2BDFC7861BB462F900E93ACC /* InnoVestTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2BDFC7941BB462F900E93ACC /* Build configuration list for PBXNativeTarget "InnoVestTests" */;
+			buildPhases = (
+				2BDFC7831BB462F900E93ACC /* Sources */,
+				2BDFC7841BB462F900E93ACC /* Frameworks */,
+				2BDFC7851BB462F900E93ACC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2BDFC7891BB462F900E93ACC /* PBXTargetDependency */,
+			);
+			name = InnoVestTests;
+			productName = InnoVestTests;
+			productReference = 2BDFC7871BB462F900E93ACC /* InnoVestTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2BDFC76A1BB462F900E93ACC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0640;
+				ORGANIZATIONNAME = FinSol;
+				TargetAttributes = {
+					2BDFC7711BB462F900E93ACC = {
+						CreatedOnToolsVersion = 6.4;
+					};
+					2BDFC7861BB462F900E93ACC = {
+						CreatedOnToolsVersion = 6.4;
+						TestTargetID = 2BDFC7711BB462F900E93ACC;
+					};
+				};
+			};
+			buildConfigurationList = 2BDFC76D1BB462F900E93ACC /* Build configuration list for PBXProject "InnoVest" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 2BDFC7691BB462F900E93ACC;
+			productRefGroup = 2BDFC7731BB462F900E93ACC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2BDFC7711BB462F900E93ACC /* InnoVest */,
+				2BDFC7861BB462F900E93ACC /* InnoVestTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2BDFC7701BB462F900E93ACC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2BDFC77D1BB462F900E93ACC /* Main.storyboard in Resources */,
+				2BDFC7821BB462F900E93ACC /* LaunchScreen.xib in Resources */,
+				2BDFC77F1BB462F900E93ACC /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2BDFC7851BB462F900E93ACC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2BDFC76E1BB462F900E93ACC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2BDFC77A1BB462F900E93ACC /* ViewController.swift in Sources */,
+				2BDFC7781BB462F900E93ACC /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2BDFC7831BB462F900E93ACC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2BDFC78E1BB462F900E93ACC /* InnoVestTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2BDFC7891BB462F900E93ACC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2BDFC7711BB462F900E93ACC /* InnoVest */;
+			targetProxy = 2BDFC7881BB462F900E93ACC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		2BDFC77B1BB462F900E93ACC /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2BDFC77C1BB462F900E93ACC /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		2BDFC7801BB462F900E93ACC /* LaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2BDFC7811BB462F900E93ACC /* Base */,
+			);
+			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		2BDFC78F1BB462F900E93ACC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2BDFC7901BB462F900E93ACC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2BDFC7921BB462F900E93ACC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = InnoVest/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		2BDFC7931BB462F900E93ACC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = InnoVest/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		2BDFC7951BB462F900E93ACC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = InnoVestTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/InnoVest.app/InnoVest";
+			};
+			name = Debug;
+		};
+		2BDFC7961BB462F900E93ACC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = InnoVestTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/InnoVest.app/InnoVest";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2BDFC76D1BB462F900E93ACC /* Build configuration list for PBXProject "InnoVest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2BDFC78F1BB462F900E93ACC /* Debug */,
+				2BDFC7901BB462F900E93ACC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2BDFC7911BB462F900E93ACC /* Build configuration list for PBXNativeTarget "InnoVest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2BDFC7921BB462F900E93ACC /* Debug */,
+				2BDFC7931BB462F900E93ACC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		2BDFC7941BB462F900E93ACC /* Build configuration list for PBXNativeTarget "InnoVestTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2BDFC7951BB462F900E93ACC /* Debug */,
+				2BDFC7961BB462F900E93ACC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2BDFC76A1BB462F900E93ACC /* Project object */;
+}
