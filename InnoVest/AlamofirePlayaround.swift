@@ -48,6 +48,8 @@ class AlamorfirePlayaround{
                 textBox.text = strOut
                 Util.writeToDocumentsFile("UserRecord.xml", fileContent: strOut)
                 var param = self.proceedXMLText(strOut)
+                var param2 = Util.xmlText2Param(strOut)
+                var record = Util.xmlText2Record(strOut)
             }
 
         

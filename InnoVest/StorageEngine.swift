@@ -29,20 +29,23 @@ class StorageEngine {
         return record
     }
 
-//    
-//    func loadRecord(userName: String, completion:(stringText:String, record:Record)->Void){
-//        
-//        if isWebService{
-//            record = getRecordWeb(userName)
-//        }else{
-//            record = getRecordLocal(userName)
-//        }
-//    }
+    
+    func loadRecordWeb(userName: String, completion:(recordLocal:Record)->Void){
+        Util.sendLoadRecordRequest(userName, completion: completion)
+    }
+    
+    func storeRecordWeb(record: Record, userName: String, completion:(res:String)->Void){
+        let valDate = Util.date2str(NSDate())
+        Util.sendSaveRecordRequest(record, valDate: valDate, userName: userName, completion: completion)
+    }
     
     func storeRecord(recordIn: Record, userName : String){
         storeRecordInSession(recordIn)
+        func completion(res:String){
+            println(res)
+        }
         if isWebService{
-            storeRecordWeb(recordIn, userName: userName)
+            storeRecordWeb(recordIn, userName: userName, completion: completion)
         }
         else{
             storeRecordLocal(recordIn, userName: userName)
@@ -59,7 +62,6 @@ class StorageEngine {
             storeRecord(record, userName: userName)
             return record
         }
-        
     }
     
     func storeRecordInSession(recordIn: Record) {
@@ -77,17 +79,13 @@ class StorageEngine {
         
         Util.writeToDocumentsFile(fn, fileContent: fileContent)
     }
-    
+
     
     func getRecordWeb(userName: String)->Record{
         var record = Record()
         return record
     }
-    
-    func storeRecordWeb(recordIn: Record, userName: String){
-        timeStemp = getTodayTimeStemp()
-        // save record to server via webservice
-    }
+
     
     func record2file(record: Record)-> String{
         var fileContent = "timeStemp"+","+getTodayTimeStemp()+","

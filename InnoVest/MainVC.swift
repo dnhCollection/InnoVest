@@ -75,6 +75,8 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
             storeEngine.storeRecord(recordNewAccount, userName: userName.text)
             defaults.removeObjectForKey("recordNewAccount")
         }
+        
+        //var strText = AlamorfirePlayaround.playAlamofire(userName)
         loadAndUpdateT0(userName.text)
         
         cashOutAmount.placeholder = "0"
@@ -88,6 +90,27 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         self.newInvGLEURInput.delegate = self
         self.cashOutAmount.delegate = self
         self.userName.delegate = self
+        
+    }
+    
+    @IBAction func loadAndUpdateT0(sender: UIButton) {
+        
+        loadAndUpdateT0(userName.text)
+    }
+    
+    private func loadAndUpdateT0(userName : String)
+    {
+        var recordOld = Record()
+        func completionLoadRecordWeb(recordLocal:Record)->Void{
+            recordOld = recordLocal
+            let ttm = getTimeToMaturity(recordOld)
+            calcEngine.timeToMaturity = ttm
+//            recordOldT0Updated = calcEngine.updateT0(recordOld)
+            recordOldT0Updated = recordOld // temporary no update necessary, since no market data update yet.
+            displayRecord(recordOldT0Updated)
+        }
+        storeEngine.loadRecordWeb(userName, completion: completionLoadRecordWeb)
+//        recordOld = storeEngine.loadRecord(userName)
         
     }
     
@@ -116,11 +139,7 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
     @IBAction func editNewInvGL(sender: UITextField) {
         recordOldT0Updated.triggerInfo.newInvGLEUR = NSNumberFormatter().numberFromString(sender.text!)!.doubleValue
     }
- 
-    @IBAction func loadAndUpdateT0(sender: UIButton) {
-        
-        loadAndUpdateT0(userName.text)
-    }
+
     
     @IBAction func segueToUnderlying(sender: UIButton) {
         performSegueWithIdentifier("showUnderlying", sender: self)
@@ -202,16 +221,6 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
 
     }
     
-    private func loadAndUpdateT0(userName : String){
-//        println(userName.text)
-
-        var strText = AlamorfirePlayaround.playAlamofire(self.userName)
-        recordOld = storeEngine.loadRecord(userName)
-        let ttm = getTimeToMaturity(recordOld)
-        calcEngine.timeToMaturity = ttm
-        recordOldT0Updated = calcEngine.updateT0(recordOld)
-        displayRecord(recordOldT0Updated)
-        }
 
     private func getTimeToMaturity(record: Record)-> Double {
         let maturityStr = recordOld.userInfo.maturityDate
@@ -284,7 +293,12 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
     
     @IBAction func investNow(sender: UIButton) {
         recordOld.resultsT0 = recordNew.resultsT1
-        storeEngine.storeRecord(recordOld, userName: userName.text)
+        
+        //storeEngine.storeRecord(recordOld, userName: userName.text)
+        func saveSessionCompletion(res:String){
+            println(res)
+        }
+        storeEngine.storeRecordWeb(recordOld, userName: userName.text, completion: saveSessionCompletion)
         loadAndUpdateT0(userName.text)
         
         
@@ -304,7 +318,11 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
     }
     
     @IBAction func saveSession(sender: UIButton) {
-        storeEngine.storeRecord(recordOldT0Updated, userName: userName.text)
+//        storeEngine.storeRecord(recordOldT0Updated, userName: userName.text)
+        func saveSessionCompletion(res:String){
+            println(res)
+        }
+        storeEngine.storeRecordWeb(recordOldT0Updated, userName: userName.text, completion: saveSessionCompletion)
         loadAndUpdateT0(userName.text)
         performSegueWithIdentifier("saveSessionLogOut", sender: self)
     }
@@ -313,12 +331,14 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
     @IBAction func simulate(sender: UIButton) {
         setInfo()
         
-        // simulate the outputs
-        //        var calcEngine = CalculationEngine(isWebService: isWebService)
-        recordNew = calcEngine.simulate(recordOldT0Updated)
+//        recordNew = calcEngine.simulate(recordOldT0Updated)
         
-        // display the outputs
-        displayRecord(recordNew)
+        func simulateCompletion(recordLocal:Record){
+            recordNew = recordLocal
+            displayRecord(recordNew)
+
+        }
+        calcEngine.simulateWeb(recordOldT0Updated, completion: simulateCompletion)
         
         DismissKeyboard()
         

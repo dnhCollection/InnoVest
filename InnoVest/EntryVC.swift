@@ -47,7 +47,7 @@ class EntryVC: UIViewController {
     }
     
     func sequeToMainView(alert: UIAlertAction!){
-        self.defaults.setObject("Guest", forKey: "userName")
+        self.defaults.setObject("FinSol_User", forKey: "userName")
         performSegueWithIdentifier("showMainView", sender: nil)
 //        println("test foo")
     }

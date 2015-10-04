@@ -27,15 +27,19 @@ class CalculationEngine {
         isWebService = false // calling local engine for debug modus
     }
     
+    func updateT0Web(recordOld: Record, completion: (record:Record)->Void){
+            // TODO
+    }
+    
     func updateT0(recordOld: Record) -> Record{
         var param = Util.record2param(recordOld)
         
         var paramOut : [String: String]
-        if isWebService {
-            paramOut = updateT0Web(param)
-        }else{
+//        if isWebService {
+//            paramOut = updateT0Web(param)
+//        }else{
             paramOut = updateT0Local(param)
-        }
+//        }
         
         var recordOldT0Updated = Util.param2record(paramOut)
         return recordOldT0Updated
@@ -47,11 +51,10 @@ class CalculationEngine {
         recordOldT0Updated.resultsT0 = coreCalc(Util.param2resultsT0(param))
         return Util.record2param(recordOldT0Updated)
     }
-
-    func updateT0Web(param : [String: String]) -> [String:String]{
-        var recordOldT0Updated = Record()
-        // update T0 via web service
-        return Util.record2param(recordOldT0Updated)
+    
+    func simulateWeb(recordOld: Record, completion: (recordLocal:Record)->Void){
+        let valDate = Util.date2str(NSDate())
+        Util.sendSimulateRequest(recordOld, valDate: valDate, completion: completion)
     }
     
     func simulate(recordOld: Record) -> Record{
@@ -60,11 +63,11 @@ class CalculationEngine {
         var param = Util.record2param(recordT0Local)
         
         var paramOut : [String: String]
-        if isWebService {
-            paramOut = simulateWeb(param)
-        }else{
+//        if isWebService {
+//            paramOut = simulateWeb(param)
+//        }else{
             paramOut = simulateLocal(param)
-        }
+//        }
         
         var recordT1 = Util.param2record(paramOut)
         return recordT1
@@ -85,13 +88,7 @@ class CalculationEngine {
         return Util.record2param(recordOld)
     }
 
-    func simulateWeb(param:[String:String])->[String:String]{
-        
-        /*
-        here is the code part generating/send the xml for RESTfull http request, and recieve/proceed response
-        */
-        return param
-    }
+
     
     func coreCalc(resultsBaseIn:ResultsBase)->ResultsBase{
         
@@ -146,6 +143,7 @@ class CalculationEngine {
         var spNetto = triggerInfo.newInvSPEUR*(1-commission)
         var gl = triggerInfo.newInvGLEUR
         var resultsNewInv = ResultsBase()
+        resultsNewInv.fundAsset = spNetto // temporary workaround to solve the issue that totalAsset will be overwriten by fundValue+guaranteeValue. In lang run totalAsset should also be stored (into the Server side)
         resultsNewInv.totalAsset = spNetto
         resultsNewInv.guaranteedPayout = gl
         return resultsNewInv
@@ -154,7 +152,10 @@ class CalculationEngine {
     func triggerInfo2record(record: Record) -> Record{
         var recordOut = record
         recordOut.resultsNewInv = triggerInfo2resultsNewInv(record.triggerInfo)
-        recordOut.resultsT1.totalAsset = record.resultsT0.totalAsset + record.resultsNewInv.totalAsset
+        
+        let totalAsset = record.resultsT0.totalAsset + record.resultsNewInv.totalAsset
+        recordOut.resultsT1.fundAsset = totalAsset  // temporary workaround to solve the issue that totalAsset will be overwriten by fundValue+guaranteeValue. In lang run totalAsset should also be stored (into the Server side)
+        recordOut.resultsT1.totalAsset = totalAsset
         recordOut.resultsT1.guaranteedPayout = record.resultsT0.guaranteedPayout + record.resultsNewInv.guaranteedPayout
         
         

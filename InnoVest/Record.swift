@@ -10,6 +10,9 @@ import Foundation
 
 class Record{
     
+    static let defaultUnderlying = "WorldStocks"
+    static let defaultTriggerType = "Vertragsguthaben gestiegen um:"
+    
     var resultsT0 : ResultsBase
     var resultsNewInv : ResultsBase
     var resultsT1 : ResultsBase

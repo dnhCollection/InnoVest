@@ -21,7 +21,84 @@ class Util{
         return xmlRequestStr
     }
     
-    static func sendLoadRecordRequest(userName: String, completion: (result:String)->Void)
+    static func getSimulateXmlRequest(record:Record, valDateStr:String) -> String
+    {
+        var paramBody = getRecordXmlBodyForSimulateRequest(record, valDateStr: valDateStr)
+        var xmlText = XmlDefaults.xmlHead + XmlDefaults.inputParametersHead + paramBody + XmlDefaults.inputParametersTail
+        return xmlText
+    }
+    
+    static func getSaveSessionXmlRequest(record:Record, valDateStr: String, userID: String)->String
+    {
+        var paramBody = getRecordXmlBody(record, valDateStr: valDateStr, userID: userID)
+        var xmlText = XmlDefaults.xmlHead + XmlDefaults.inputParametersHead + paramBody + XmlDefaults.inputParametersTail
+        return xmlText
+    }
+    
+    static func getRecordXmlBodyForSimulateRequest(record: Record, valDateStr: String)->String{
+        var bodyXml = getXmlParamLine(SaveRecordFieldsEn.valuationDate, typeStr: "S", value: valDateStr)
+            + getXmlParamLine(SaveRecordFieldsEn.birthDate, typeStr: "S", value: record.userInfo.birthDate)
+            + getXmlParamLine(SaveRecordFieldsEn.maturityDate, typeStr: "S", value: record.userInfo.maturityDate)
+            + getXmlParamLine(SaveRecordFieldsEn.underlying, typeStr: "S", value: Record.defaultUnderlying)
+            
+            + getXmlParamLine(SaveRecordFieldsEn.fundAssetT0, typeStr: "D", value: record.resultsT0.fundAsset.description)
+            + getXmlParamLine(SaveRecordFieldsEn.guaranteeAssetT0, typeStr: "D", value: record.resultsT0.guaranteeAsset.description)
+            + getXmlParamLine(SaveRecordFieldsEn.guaranteedPayoutT0, typeStr: "D", value: record.resultsT0.guaranteedPayout.description)
+            
+            + getXmlParamLine(SaveRecordFieldsEn.newInvSPEUR, typeStr: "D", value: record.triggerInfo.newInvSPEUR.description)
+            + getXmlParamLine(SaveRecordFieldsEn.newInvGLEUR, typeStr: "D", value: record.triggerInfo.newInvGLEUR.description)
+        
+        return bodyXml
+    
+    }
+    
+    static func getRecordXmlBody(record: Record, valDateStr:String, userID: String) -> String
+    {
+        var bodyXml = getXmlParamLine(SaveRecordFieldsEn.valuationDate, typeStr: "S", value: valDateStr)
+                    + getXmlParamLine(SaveRecordFieldsEn.userID, typeStr: "S", value: userID)
+                    + getXmlParamLine(SaveRecordFieldsEn.birthDate, typeStr: "S", value: record.userInfo.birthDate)
+                    + getXmlParamLine(SaveRecordFieldsEn.maturityDate, typeStr: "S", value: record.userInfo.maturityDate)
+                    + getXmlParamLine(SaveRecordFieldsEn.underlying, typeStr: "S", value: Record.defaultUnderlying)
+                    + getXmlParamLine(SaveRecordFieldsEn.communication, typeStr: "S", value: record.userInfo.communication)
+                    + getXmlParamLine(SaveRecordFieldsEn.address, typeStr: "S", value: record.userInfo.address)
+            
+                    + getXmlParamLine(SaveRecordFieldsEn.fundAssetT0, typeStr: "D", value: record.resultsT0.fundAsset.description)
+                    + getXmlParamLine(SaveRecordFieldsEn.guaranteeAssetT0, typeStr: "D", value: record.resultsT0.guaranteeAsset.description)
+                    + getXmlParamLine(SaveRecordFieldsEn.guaranteedPayoutT0, typeStr: "D", value: record.resultsT0.guaranteedPayout.description)
+                    + getXmlParamLine(SaveRecordFieldsEn.projectedPayoutT0, typeStr: "D", value: record.resultsT0.projectedPayout.description)
+            
+                    + getXmlParamLine(SaveRecordFieldsEn.newInvSPEUR, typeStr: "D", value: record.triggerInfo.newInvSPEUR.description)
+                    + getXmlParamLine(SaveRecordFieldsEn.newInvGLEUR, typeStr: "D", value: record.triggerInfo.newInvGLEUR.description)
+                    + getXmlParamLine(SaveRecordFieldsEn.triggerType, typeStr: "S", value: Record.defaultTriggerType)
+                    + getXmlParamLine(SaveRecordFieldsEn.triggerThreshold, typeStr: "D", value: record.triggerInfo.triggerLevel.description)
+        
+        return bodyXml
+    }
+    //<parameter name="valuationDate" type="typedValue">S	2015-07-07</parameter>
+    //<parameter name="underlyingMIF" type="typedValue">S	WorldStocks</parameter>
+    //<parameter name="birthDate" type="typedValue">S	1977-08-01</parameter>
+    //<parameter name="maturityDate" type="typedValue">S	2035-01-01</parameter>
+    //<parameter name="fundAssetT0" type="typedValue">D	 80.8636329858427</parameter>
+    //<parameter name="guaranteeAssetT0" type="typedValue">D	 16.7363670141572</parameter>
+    //<parameter name="guaranteeLevelT0" type="typedValue">D	 100</parameter>
+    //<parameter name="performanceT0" type="typedValue">D	 300.807226804884</parameter>
+    //<parameter name="communicationMedia" type="typedValue">S	SMS</parameter>
+    //<parameter name="address" type="typedValue">S	xxx</parameter>
+    //<parameter name="userID" type="typedValue">S	n217665</parameter>
+    //<parameter name="newSP" type="typedValue">D	 0</parameter>
+    //<parameter name="guaranteeLevelNewSP" type="typedValue">D	 0</parameter>
+    //<parameter name="triggerType" type="typedValue">S	Vertragsguthaben gestiegen um:</parameter>
+    //<parameter name="triggerThreshold" type="typedValue">D	 0</parameter>
+    
+    
+    static func getXmlParamLine(key: String, typeStr: String, value: String)-> String
+    {
+        let typedValue = typeStr + "\t" + value
+        let xmlLine = XmlDefaults.parameterHead + key + XmlDefaults.parameterMid + typedValue + XmlDefaults.parameterTail
+        return xmlLine
+    }
+    
+    static func sendLoadRecordRequest(userName: String, completion: (recordLocal:Record)->Void)
     {
         let xmlTextContent = getLoadUserRecordXmlRequest(userName)
         let custom: (URLRequestConvertible, [String: AnyObject]?) -> (NSURLRequest, NSError?) = {
@@ -33,7 +110,7 @@ class Util{
             return (mutableURLRequest, nil)
         }
         
-        let url = Defaults.urlLoadRecord
+        let url = StaticDefaults.urlLoadRecord
         
         Alamofire.request(.POST, url, parameters: Dictionary(), encoding: .Custom(custom)).responseString
             { (request, response, responseStr, error) in
@@ -41,17 +118,79 @@ class Util{
                 println(response)
                 println(responseStr)
                 println(error)
-//                Util.writeToDocumentsFile("UserRecord.xml", fileContent: string!)
+                Util.writeToDocumentsFile("LoadRecordRequest.xml", fileContent: responseStr!)
 //                var param = self.proceedXMLText(strOut)
-                completion(result:responseStr!)
+                let record = Util.xmlText2Record(responseStr!)
+                completion(recordLocal: record)
         }
 
     }
+
+    static func sendSimulateRequest(record:Record, valDate: String, completion: (recordLocal:Record)->Void)
+    {
+        let xmlTextContent = getSimulateXmlRequest(record, valDateStr: valDate)
+        let custom: (URLRequestConvertible, [String: AnyObject]?) -> (NSURLRequest, NSError?) = {
+            (URLRequest, parameters) in
+            let mutableURLRequest = URLRequest.URLRequest.mutableCopy() as! NSMutableURLRequest
+            mutableURLRequest.setValue("text/xml; charset=utf-8", forHTTPHeaderField: "Content-Type")
+            let data = (xmlTextContent as NSString).dataUsingEncoding(NSUTF8StringEncoding)
+            mutableURLRequest.HTTPBody = data
+            return (mutableURLRequest, nil)
+        }
+        
+        let url = StaticDefaults.urlSimulate
+        
+        Alamofire.request(.POST, url, parameters: Dictionary(), encoding: .Custom(custom)).responseString
+            { (request, response, responseStr, error) in
+                println(request)
+                println(response)
+                println(responseStr)
+                println(error)
+                Util.writeToDocumentsFile("SimulateRequest.xml", fileContent: xmlTextContent)
+                Util.writeToDocumentsFile("SimulateResponse.xml", fileContent: responseStr!)
+
+                //                var param = self.proceedXMLText(strOut)
+                let record = Util.xmlText2Record(responseStr!)
+                completion(recordLocal: record)
+        }
+        
+    }
+
     
-    private static func proceedXMLText(xmlText:String) -> [String:String]{
+    static func sendSaveRecordRequest(record:Record, valDate: String, userName: String, completion: (res :String)->Void)
+    {
+        let xmlTextContent = getSaveSessionXmlRequest(record, valDateStr: valDate, userID: userName)
+        let custom: (URLRequestConvertible, [String: AnyObject]?) -> (NSURLRequest, NSError?) = {
+            (URLRequest, parameters) in
+            let mutableURLRequest = URLRequest.URLRequest.mutableCopy() as! NSMutableURLRequest
+            mutableURLRequest.setValue("text/xml; charset=utf-8", forHTTPHeaderField: "Content-Type")
+            let data = (xmlTextContent as NSString).dataUsingEncoding(NSUTF8StringEncoding)
+            mutableURLRequest.HTTPBody = data
+            return (mutableURLRequest, nil)
+        }
+        
+        let url = StaticDefaults.urlSaveRecord
+        
+        Alamofire.request(.POST, url, parameters: Dictionary(), encoding: .Custom(custom)).responseString
+            { (request, response, responseStr, error) in
+                println(request)
+                println(response)
+                println(responseStr)
+                println(error)
+                
+                Util.writeToDocumentsFile("SaveSessionRequest.xml", fileContent: xmlTextContent)
+                Util.writeToDocumentsFile("SaveSessionResponse.xml", fileContent: responseStr!)
+                completion(res: responseStr!)
+        }
+        
+    }
+    
+    
+    static func xmlText2Param(xmlText:String) -> [String:String]{
         var param = [String:String]()
         var xml = SWXMLHash.parse(xmlText)
-        if let resultText = xml[Defaults.responseXmlLevel1][Defaults.responseXmlLevel2][Defaults.responseXmlLevel3].element?.text
+//        if let resultText = xml[Defaults.responseXmlLevel1][Defaults.responseXmlLevel2][Defaults.responseXmlLevel3].element?.text
+        if let resultText = xml["qwbWebService"]["results"]["result"].element?.text
         {
             println(resultText)
             param = text2Param(resultText)
@@ -59,9 +198,9 @@ class Util{
         return param
     }
     
-    private static func proceedXMLText(xmlText:String)->Record
+    static func xmlText2Record(xmlText:String)->Record
     {
-        let param = self.proceedXMLText(xmlText)
+        let param = self.xmlText2Param(xmlText)
         let record = Util.param2record(param)
         return record
     }
@@ -73,7 +212,11 @@ class Util{
         for line in lines
         {
             var words = split(line){$0=="\t"}
-            param[words[0]]=words[1]
+            if (words.count==1){
+                param[words[0]]=""
+            }else{
+                param[words[0]]=words[1]
+            }
         }
         
         return param
@@ -84,42 +227,42 @@ class Util{
 
         //UserInfo
         out["UserInfo"]="yes"
-        out["birthDate"]=record.userInfo.birthDate
-        out["maturityDate"]=record.userInfo.maturityDate
-        out["communication"]=record.userInfo.communication
-        out["address"]=record.userInfo.address
+        out[RecordFieldsEN.birthDate]=record.userInfo.birthDate
+        out[RecordFieldsEN.maturityDate]=record.userInfo.maturityDate
+        out[RecordFieldsEN.communication]=record.userInfo.communication
+        out[RecordFieldsEN.address]=record.userInfo.address
         
-        //ResultsNewInv
+        //ResultsT0
         out["ResultsT1"]="yes"
-        out["fundAssetT0"]=record.resultsT0.fundAsset.description
-        out["guarantneeAssetT0"]=record.resultsT0.guaranteeAsset.description
-        out["totalAssetT0"]=record.resultsT0.totalAsset.description
-        out["guaranteedPayoutT0"]=record.resultsT0.guaranteedPayout.description
-        out["projectedPayoutT0"]=record.resultsT0.projectedPayout.description
+        out[RecordFieldsEN.fundAssetT0]=record.resultsT0.fundAsset.description
+        out[RecordFieldsEN.guaranteeAssetT0]=record.resultsT0.guaranteeAsset.description
+        out[RecordFieldsEN.totalAssetT0]=record.resultsT0.totalAsset.description
+        out[RecordFieldsEN.guaranteedPayoutT0]=record.resultsT0.guaranteedPayout.description
+        out[RecordFieldsEN.projectedPayoutT0]=record.resultsT0.projectedPayout.description
         
         //ResultsNewInv
         out["ResultsNewInv"]="yes"
-        out["fundAssetNewInv"]=record.resultsNewInv.fundAsset.description
-        out["guarantneeAssetNewInv"]=record.resultsNewInv.guaranteeAsset.description
-        out["totalAssetNewInv"]=record.resultsNewInv.totalAsset.description
-        out["guaranteedPayoutNewInv"]=record.resultsNewInv.guaranteedPayout.description
-        out["projectedPayoutNewInv"]=record.resultsNewInv.projectedPayout.description
+        out[RecordFieldsEN.fundAssetNewSP]=record.resultsNewInv.fundAsset.description
+        out[RecordFieldsEN.guaranteeAssetNewSP]=record.resultsNewInv.guaranteeAsset.description
+        out[RecordFieldsEN.totalAssetNewSP]=record.resultsNewInv.totalAsset.description
+        out[RecordFieldsEN.guaranteedPayoutNewSP]=record.resultsNewInv.guaranteedPayout.description
+        out[RecordFieldsEN.projectedPayoutNewSP]=record.resultsNewInv.projectedPayout.description
 
         //ResultsT1
         out["ResultsT1"]="yes"
-        out["fundAssetT1"]=record.resultsT1.fundAsset.description
-        out["guarantneeAssetT1"]=record.resultsT1.guaranteeAsset.description
-        out["totalAssetT1"]=record.resultsT1.totalAsset.description
-        out["guaranteedPayoutT1"]=record.resultsT1.guaranteedPayout.description
-        out["projectedPayoutT1"]=record.resultsT1.projectedPayout.description
+        out[RecordFieldsEN.fundAssetT1]=record.resultsT1.fundAsset.description
+        out[RecordFieldsEN.guaranteeAssetT1]=record.resultsT1.guaranteeAsset.description
+        out[RecordFieldsEN.totalAssetT1]=record.resultsT1.totalAsset.description
+        out[RecordFieldsEN.guaranteedPayoutT1]=record.resultsT1.guaranteedPayout.description
+        out[RecordFieldsEN.projectedPayoutT1]=record.resultsT1.projectedPayout.description
         
         
         //TriggerInfo
         out["TriggerInfo"]="yes"
-        out["newInvSPEUR"]=record.triggerInfo.newInvSPEUR.description
-        out["newInvGLEUR"]=record.triggerInfo.newInvGLEUR.description
-        out["triggerType"]=record.triggerInfo.triggerType
-        out["triggerLevel"]=record.triggerInfo.triggerLevel.description
+        out[RecordFieldsEN.newInvSPEUR]=record.triggerInfo.newInvSPEUR.description
+        out[RecordFieldsEN.newInvGLEUR]=record.triggerInfo.newInvGLEUR.description
+//        out[RecordFieldsEN.]=record.triggerInfo.triggerType
+//        out["triggerLevel"]=record.triggerInfo.triggerLevel.description
         
         return out
     }
@@ -129,24 +272,36 @@ class Util{
         var record = Record()
         
         //UserInfo
-//        param["UserInfo"]="yes"
-        record.userInfo = param2userInfo(param)
+        if param[RecordFieldsEN.userInfoTitle] == "yes"
+        {
+            record.userInfo = param2userInfo(param)
+        }
         
         //ResultsT0
-//        param["ResultsT0"]="yes"
-        record.resultsT0 = param2resultsT0(param)
+        if param[RecordFieldsEN.resultsT0Title]=="yes"
+        {
+            record.resultsT0 = param2resultsT0(param)
+        }
         
         //ResultsNewInv
-//        param["ResultsNewInv"]="yes"
-        record.resultsNewInv = param2resultsNewInv(param)
+        if param[RecordFieldsEN.resultsNewSPTitle]=="yes"
+        {
+            record.resultsNewInv = param2resultsNewInv(param)
+        }
         
         //ResultsT1
-//        out["ResultsT1"]="yes"
-        record.resultsT1 = param2resultsT1(param)
+        if param[RecordFieldsEN.resultsT1Title]=="yes"
+        {
+            record.resultsT1 = param2resultsT1(param)
+        }
+        
         
         //TriggerInfo
-//        out["TriggerInfo"]="yes"
-        record.triggerInfo = param2triggerInfo(param)
+        if param[RecordFieldsEN.triggerSetupTitle]=="yes"
+        {
+            record.triggerInfo = param2triggerInfo(param)
+        }
+
         
         
         return record
@@ -160,53 +315,53 @@ class Util{
 
     static func param2userInfo(param: [String: String])-> UserInfo{
         var userInfo = UserInfo()
-        userInfo.birthDate = param["birthDate"]!
-        userInfo.maturityDate = param["maturityDate"]!
-        userInfo.communication = param["communication"]!
-        userInfo.address = param["address"]!
+        userInfo.birthDate = param[RecordFieldsEN.birthDate]!
+        userInfo.maturityDate = param[RecordFieldsEN.maturityDate]!
+        userInfo.communication = param[RecordFieldsEN.communication]!
+        userInfo.address = param[RecordFieldsEN.address]!
         
         return userInfo
     }
     
     static func param2resultsT0(param: [String: String])-> ResultsBase{
         var resultsT0 = ResultsBase()
-        resultsT0.fundAsset = str2double(param["fundAssetT0"]!)
-        resultsT0.guaranteeAsset = str2double(param["guarantneeAssetT0"]!)
-        resultsT0.totalAsset = str2double(param["totalAssetT0"]!)
-        resultsT0.guaranteedPayout = str2double(param["guaranteedPayoutT0"]!)
-        resultsT0.projectedPayout = str2double(param["projectedPayoutT0"]!)
+        resultsT0.fundAsset = str2double(param[RecordFieldsEN.fundAssetT0]!)
+        resultsT0.guaranteeAsset = str2double(param[RecordFieldsEN.guaranteeAssetT0]!)
+        resultsT0.totalAsset = resultsT0.fundAsset + resultsT0.guaranteeAsset
+        resultsT0.guaranteedPayout = str2double(param[RecordFieldsEN.guaranteedPayoutT0]!)
+        resultsT0.projectedPayout = str2double(param[RecordFieldsEN.projectedPayoutT0]!)
         
         return resultsT0
     }
     
     static func param2resultsNewInv(param: [String: String])-> ResultsBase{
         var resultsNewInv = ResultsBase()
-        resultsNewInv.fundAsset = str2double(param["fundAssetNewInv"]!)
-        resultsNewInv.guaranteeAsset = str2double(param["guarantneeAssetNewInv"]!)
-        resultsNewInv.totalAsset = str2double(param["totalAssetNewInv"]!)
-        resultsNewInv.guaranteedPayout = str2double(param["guaranteedPayoutNewInv"]!)
-        resultsNewInv.projectedPayout = str2double(param["projectedPayoutNewInv"]!)
+        resultsNewInv.fundAsset = str2double(param[RecordFieldsEN.fundAssetNewSP]!)
+        resultsNewInv.guaranteeAsset = str2double(param[RecordFieldsEN.guaranteeAssetNewSP]!)
+        resultsNewInv.totalAsset = resultsNewInv.fundAsset + resultsNewInv.guaranteeAsset
+        resultsNewInv.guaranteedPayout = str2double(param[RecordFieldsEN.guaranteedPayoutNewSP]!)
+        resultsNewInv.projectedPayout = str2double(param[RecordFieldsEN.projectedPayoutNewSP]!)
         
         return resultsNewInv
     }
     
     static func param2resultsT1(param: [String: String])-> ResultsBase{
         var resultsT1 = ResultsBase()
-        resultsT1.fundAsset = str2double(param["fundAssetT1"]!)
-        resultsT1.guaranteeAsset = str2double(param["guarantneeAssetT1"]!)
-        resultsT1.totalAsset = str2double(param["totalAssetT1"]!)
-        resultsT1.guaranteedPayout = str2double(param["guaranteedPayoutT1"]!)
-        resultsT1.projectedPayout = str2double(param["projectedPayoutT1"]!)
+        resultsT1.fundAsset = str2double(param[RecordFieldsEN.fundAssetT1]!)
+        resultsT1.guaranteeAsset = str2double(param[RecordFieldsEN.guaranteeAssetT1]!)
+        resultsT1.totalAsset = resultsT1.fundAsset + resultsT1.guaranteeAsset
+        resultsT1.guaranteedPayout = str2double(param[RecordFieldsEN.guaranteedPayoutT1]!)
+        resultsT1.projectedPayout = str2double(param[RecordFieldsEN.projectedPayoutT1]!)
         
         return resultsT1
     }
     
     static func param2triggerInfo(param: [String: String])-> TriggerInfo{
         var triggerInfo = TriggerInfo()
-        triggerInfo.newInvSPEUR = str2double(param["newInvSPEUR"]!)
-        triggerInfo.newInvGLEUR = str2double(param["newInvGLEUR"]!)
-        triggerInfo.triggerType = param["triggerType"]!
-        triggerInfo.triggerLevel = str2double(param["triggerLevel"]!)
+        triggerInfo.newInvSPEUR = str2double(param[RecordFieldsEN.newInvSPEUR]!)
+        triggerInfo.newInvGLEUR = str2double(param[RecordFieldsEN.newInvGLEUR]!)
+//        triggerInfo.triggerType = param[RecordFieldsEN.]!
+//        triggerInfo.triggerLevel = str2double(param["triggerLevel"]!)
         
         return triggerInfo
     }
@@ -220,6 +375,14 @@ class Util{
             fileContent.writeToFile(path, atomically: false, encoding: NSUTF8StringEncoding, error: nil);
             
         }
+    }
+    
+    static func date2str(date: NSDate)-> String
+    {
+        let dateFormater = NSDateFormatter()
+        dateFormater.dateFormat = "yyyy-MM-dd"
+        let dateStr = dateFormater.stringFromDate(date)
+        return dateStr
     }
 }
 
