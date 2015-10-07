@@ -30,6 +30,7 @@
 		2BDFC7AA1BB4641C00E93ACC /* StreamScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDFC7A91BB4641C00E93ACC /* StreamScanner.swift */; };
 		2BDFC7AC1BB4642900E93ACC /* UnderlyingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDFC7AB1BB4642900E93ACC /* UnderlyingVC.swift */; };
 		2BDFC7AE1BB4643B00E93ACC /* Underlyings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDFC7AD1BB4643B00E93ACC /* Underlyings.swift */; };
+		2BEFBCE51BC5B7FB00707538 /* ActivityIndicatorUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BEFBCE41BC5B7FB00707538 /* ActivityIndicatorUtil.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -126,6 +127,7 @@
 		2BDFC7A91BB4641C00E93ACC /* StreamScanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamScanner.swift; sourceTree = "<group>"; };
 		2BDFC7AB1BB4642900E93ACC /* UnderlyingVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnderlyingVC.swift; sourceTree = "<group>"; };
 		2BDFC7AD1BB4643B00E93ACC /* Underlyings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Underlyings.swift; sourceTree = "<group>"; };
+		2BEFBCE41BC5B7FB00707538 /* ActivityIndicatorUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorUtil.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -189,6 +191,7 @@
 				2BDFC79B1BB463F000E93ACC /* CalculationEngine.swift */,
 				2BDFC79F1BB4640C00E93ACC /* EntryVC.swift */,
 				2BDFC7A01BB4640C00E93ACC /* MainVC.swift */,
+				2BEFBCE41BC5B7FB00707538 /* ActivityIndicatorUtil.swift */,
 				2BDFC7A11BB4640C00E93ACC /* MessageVC.swift */,
 				2BDFC7A21BB4640C00E93ACC /* Record.swift */,
 				2BDFC7A31BB4640C00E93ACC /* Util.swift */,
@@ -397,6 +400,7 @@
 				2BDFC7A51BB4640C00E93ACC /* MainVC.swift in Sources */,
 				2B168FFF1BBC582A00432EF7 /* SWXMLHash.swift in Sources */,
 				2BC1D52D1BB85D2E00AF8604 /* AlamofirePlayaround.swift in Sources */,
+				2BEFBCE51BC5B7FB00707538 /* ActivityIndicatorUtil.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

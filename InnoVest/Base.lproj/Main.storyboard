@@ -740,9 +740,6 @@
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <activityIndicatorView opaque="NO" tag="1" contentMode="center" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="3Wl-C7-LmY">
-                                <rect key="frame" x="290" y="240" width="20" height="20"/>
-                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
@@ -843,7 +840,6 @@
                             <constraint firstItem="sHt-Lj-g0T" firstAttribute="top" secondItem="LDB-s6-rhy" secondAttribute="bottom" constant="5" id="LOC-0S-Wuu"/>
                             <constraint firstItem="5Jk-tp-H65" firstAttribute="top" secondItem="gFF-DA-Waf" secondAttribute="topMargin" constant="30" id="LUT-hP-jCt"/>
                             <constraint firstItem="DGM-65-pDX" firstAttribute="leading" secondItem="bfA-ci-U2h" secondAttribute="leading" id="Lnj-7V-UKe"/>
-                            <constraint firstItem="3Wl-C7-LmY" firstAttribute="centerX" secondItem="gFF-DA-Waf" secondAttribute="centerX" id="MNq-L3-29K"/>
                             <constraint firstItem="Oze-LH-miQ" firstAttribute="height" secondItem="o8v-nW-m0D" secondAttribute="height" id="Mws-Hc-NA0"/>
                             <constraint firstItem="02w-Ma-OiU" firstAttribute="top" secondItem="yt8-I6-jhW" secondAttribute="bottom" constant="12" id="Nhs-pe-6gu"/>
                             <constraint firstItem="LDB-s6-rhy" firstAttribute="width" secondItem="sHt-Lj-g0T" secondAttribute="width" id="NvB-qM-gHo"/>
@@ -899,7 +895,6 @@
                             <constraint firstItem="i8o-EI-b3L" firstAttribute="baseline" secondItem="Ru3-G8-DEp" secondAttribute="baseline" id="aBT-am-1ap"/>
                             <constraint firstItem="Hne-B1-4a8" firstAttribute="trailing" secondItem="Tkt-Ko-iSe" secondAttribute="trailing" id="aC7-bM-eLh"/>
                             <constraint firstItem="LDB-s6-rhy" firstAttribute="top" secondItem="Ytq-Jg-oTh" secondAttribute="top" constant="1" id="aUZ-nX-9sb"/>
-                            <constraint firstItem="3Wl-C7-LmY" firstAttribute="centerY" secondItem="gFF-DA-Waf" secondAttribute="centerY" id="aWd-Lq-IIG"/>
                             <constraint firstItem="Hkx-Rp-arM" firstAttribute="top" secondItem="ByH-cF-cGc" secondAttribute="bottom" constant="12" id="aY9-8Z-ZrG"/>
                             <constraint firstItem="jdg-na-7XD" firstAttribute="width" secondItem="02w-Ma-OiU" secondAttribute="width" id="aoj-RQ-Scx"/>
                             <constraint firstItem="JLc-1s-Ly6" firstAttribute="top" secondItem="E9F-lV-GNP" secondAttribute="bottom" constant="11" id="awe-MO-CgO"/>
@@ -1058,7 +1053,6 @@
                         </variation>
                     </view>
                     <connections>
-                        <outlet property="activityIndicator" destination="3Wl-C7-LmY" id="ROm-I7-afT"/>
                         <outlet property="address" destination="A4P-b6-vCE" id="6ac-wF-f8R"/>
                         <outlet property="birthDate" destination="Xx1-Ri-owa" id="SB5-gB-soV"/>
                         <outlet property="cashOutAmount" destination="SAn-T1-a7j" id="7kD-wM-okX"/>

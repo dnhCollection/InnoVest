@@ -44,9 +44,8 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
     @IBOutlet weak var guaranteedPayoutT1Display: UILabel!
     @IBOutlet weak var projectedPayoutT1Display: UILabel!
     
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    
     let defaults = NSUserDefaults.standardUserDefaults()
+    let actInd = ActivityIndicatorUtil()
     
     var isWebService = false
     
@@ -69,9 +68,9 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        activityIndicator.hidesWhenStopped = true
-        activityIndicator.hidden = true
-        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
+//        activityIndicator.hidesWhenStopped = true
+//        activityIndicator.hidden = true
+//        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
         
         
         
@@ -359,10 +358,12 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         func simulateCompletion(recordLocal:Record){
             recordNew = recordLocal
             displayRecord(recordNew)
-            activityIndicator.stopAnimating()
+            //activityIndicator.stopAnimating()
+            actInd.hideActivityIndicator(self.view)
         }
-        activityIndicator.startAnimating()
-        activityIndicator.hidden=false
+//        activityIndicator.startAnimating()
+//        activityIndicator.hidden=false
+        actInd.showActivityIndicator(self.view)
         calcEngine.simulateWeb(recordOldT0Updated, completion: simulateCompletion)
         
         DismissKeyboard()
@@ -433,10 +434,12 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         }else{
             func saveSessionCompletion(res:String){
                 print(res)
-                activityIndicator.stopAnimating()
+                //activityIndicator.stopAnimating()
+                actInd.hideActivityIndicator(self.view)
             }
-            activityIndicator.startAnimating()
-            activityIndicator.hidden=false
+            actInd.showActivityIndicator(self.view)
+//            activityIndicator.startAnimating()
+//            activityIndicator.hidden=false
             storeEngine.storeRecordWeb(recordToStore, userName: userName.text!, completion: saveSessionCompletion)
 
         }
@@ -457,10 +460,12 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
                 calcEngine.timeToMaturity = ttm
                 //            recordOldT0Updated = calcEngine.updateT0(recordOld)    // temporary no update necessary, since no market data update yet.
                 displayRecord(record)
-                activityIndicator.stopAnimating()
+                actInd.hideActivityIndicator(self.view)
+//                activityIndicator.stopAnimating()
             }
-            activityIndicator.startAnimating()
-            activityIndicator.hidden=false
+            actInd.showActivityIndicator(self.view)
+//            activityIndicator.startAnimating()
+//            activityIndicator.hidden=false
             storeEngine.loadRecordWeb(id, completion: completionLoadRecordWeb)
             
         }
