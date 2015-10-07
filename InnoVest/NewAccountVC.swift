@@ -18,6 +18,7 @@ class NewAccountVC: UIViewController {
     @IBOutlet weak var communicationInput: UITextField!
     @IBOutlet weak var addressInput: UITextField!
     
+    let storeEngine = StorageEngine()
     var recordInit = Record()
     
     let defaults = NSUserDefaults.standardUserDefaults()
@@ -28,17 +29,23 @@ class NewAccountVC: UIViewController {
     
     @IBAction func registerNewAccount(sender: UIButton)
     {
-        if !newUserName.text.isEmpty{
+        if !newUserName.text!.isEmpty{
             
-            recordInit.userInfo.birthDate = birthDateInput.text
-            recordInit.userInfo.maturityDate = maturityDateInput.text
-            recordInit.userInfo.gender = genderInput.text
-            recordInit.userInfo.communication = communicationInput.text
-            recordInit.userInfo.address = addressInput.text
+            recordInit.userInfo.birthDate = birthDateInput.text!
+            recordInit.userInfo.maturityDate = maturityDateInput.text!
+            recordInit.userInfo.gender = genderInput.text!
+            recordInit.userInfo.communication = communicationInput.text!
+            recordInit.userInfo.address = addressInput.text!
             
             self.defaults.setObject(Util.record2param(recordInit), forKey: "recordNewAccount")
             
-            println("very thing fine till now")
+            print("very thing fine till now")
+            
+            func registerNewAccountCompletion(responseStr: String)
+            {
+                print(responseStr)
+            }
+            storeEngine.registerNewAccountWeb(recordInit, userName: newUserName.text!, completion: registerNewAccountCompletion)
             
             performSegueWithIdentifier("newAccountToMainVC", sender: self)
         }
@@ -51,7 +58,7 @@ class NewAccountVC: UIViewController {
         
         switch identifier!{
             case "newAccountToMainVC": self.defaults.setObject(newUserName.text!, forKey: "userName")
-        default: println("unknown segue identifier")
+        default: print("unknown segue identifier")
         }
     }
     

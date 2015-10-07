@@ -34,6 +34,11 @@ class StorageEngine {
         Util.sendLoadRecordRequest(userName, completion: completion)
     }
     
+    func registerNewAccountWeb(record: Record, userName: String, completion:(res:String)->Void){
+        let valDate = Util.date2str(NSDate())
+        Util.sendRegisterNewAccountRequest(record, valDate: valDate, userName: userName, completion: completion)
+    }
+    
     func storeRecordWeb(record: Record, userName: String, completion:(res:String)->Void){
         let valDate = Util.date2str(NSDate())
         Util.sendSaveRecordRequest(record, valDate: valDate, userName: userName, completion: completion)
@@ -42,7 +47,7 @@ class StorageEngine {
     func storeRecord(recordIn: Record, userName : String){
         storeRecordInSession(recordIn)
         func completion(res:String){
-            println(res)
+            print(res)
         }
         if isWebService{
             storeRecordWeb(recordIn, userName: userName, completion: completion)
@@ -53,12 +58,12 @@ class StorageEngine {
     }
     
     func getRecordLocal(userName: String)->Record{
-        var fileContent = readFromDocumentsFile(userName)
+        let fileContent = readFromDocumentsFile(userName)
         if fileContent != "read file NOK"{
-            var record = file2record(fileContent)
+            let record = file2record(fileContent)
             return record
         }else{
-            var record = Record()
+            let record = Record()
             storeRecord(record, userName: userName)
             return record
         }
@@ -74,15 +79,15 @@ class StorageEngine {
         timeStemp = getTodayTimeStemp()
         // save record to local file system
         
-        var fn = userName + ".txt"
-        var fileContent = record2file(recordIn)
+        let fn = userName + ".txt"
+        let fileContent = record2file(recordIn)
         
         Util.writeToDocumentsFile(fn, fileContent: fileContent)
     }
 
     
     func getRecordWeb(userName: String)->Record{
-        var record = Record()
+        let record = Record()
         return record
     }
 
@@ -108,7 +113,7 @@ class StorageEngine {
 
     func file2record(fileContent: String)-> Record{
         
-        var record = Record()
+        let record = Record()
         
         let components = fileContent.componentsSeparatedByString(",")
         
@@ -125,7 +130,7 @@ class StorageEngine {
                 case "guaranteedPayoutT0": record.resultsT0.guaranteedPayout = Util.str2double(components[ind])
                 case "projectedPayoutT0": record.resultsT0.projectedPayout = Util.str2double(components[ind])
             
-            default : println("content")
+            default : print("content")
             }
             
             
@@ -149,10 +154,10 @@ class StorageEngine {
         if let dirs : [String] = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.AllDomainsMask, true) as? [String]
         {
             let dir = dirs[0] //documents directory
-            let path = dir.stringByAppendingPathComponent(fileName+".txt");
+            let path = (dir as NSString).stringByAppendingPathComponent(fileName+".txt");
 
-            println(dir)
-            println(path)
+            print(dir)
+            print(path)
             if let input = NSFileHandle(forReadingAtPath: path)
             {
                 let scanner = StreamScanner(source: input, delimiters: NSCharacterSet(charactersInString: ":\n"))

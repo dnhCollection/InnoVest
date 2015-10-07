@@ -44,6 +44,8 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
     @IBOutlet weak var guaranteedPayoutT1Display: UILabel!
     @IBOutlet weak var projectedPayoutT1Display: UILabel!
     
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    
     let defaults = NSUserDefaults.standardUserDefaults()
     
     var isWebService = false
@@ -67,23 +69,31 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.hidden = true
+        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
+        
+        
+        
         userName.text = defaults.stringForKey("userName")
         userName.userInteractionEnabled = false
+        
         // the following if-let block initialize the record storage in case of new Account
         if let paramNewAccount = defaults.objectForKey("recordNewAccount") as? [String:String]{
             let recordNewAccount = Util.param2record(paramNewAccount)
-            storeEngine.storeRecord(recordNewAccount, userName: userName.text)
+            //storeEngine.storeRecord(recordNewAccount, userName: userName.text!)
+            store(recordNewAccount)
             defaults.removeObjectForKey("recordNewAccount")
         }
         
         //var strText = AlamorfirePlayaround.playAlamofire(userName)
-        loadAndUpdateT0(userName.text)
+        loadAndUpdateT0(userName.text!)
         
         cashOutAmount.placeholder = "0"
         
         underlyingDisplay.text = Underlyings.germanStocks.description
         
-        var tap:UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: "DismissKeyboard")
+        let tap:UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: "DismissKeyboard")
         self.view.addGestureRecognizer(tap)
         
         self.newInvSPEURInput.delegate = self
@@ -95,24 +105,28 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
     
     @IBAction func loadAndUpdateT0(sender: UIButton) {
         
-        loadAndUpdateT0(userName.text)
+        loadAndUpdateT0(userName.text!)
     }
     
     private func loadAndUpdateT0(userName : String)
     {
-        var recordOld = Record()
-        func completionLoadRecordWeb(recordLocal:Record)->Void{
-            recordOld = recordLocal
-            let ttm = getTimeToMaturity(recordOld)
-            calcEngine.timeToMaturity = ttm
-//            recordOldT0Updated = calcEngine.updateT0(recordOld)
-            recordOldT0Updated = recordOld // temporary no update necessary, since no market data update yet.
-            displayRecord(recordOldT0Updated)
-        }
-        storeEngine.loadRecordWeb(userName, completion: completionLoadRecordWeb)
-//        recordOld = storeEngine.loadRecord(userName)
-        
+        load(userName)
     }
+//    {
+//        var recordOld = Record()
+//        func completionLoadRecordWeb(recordLocal:Record)->Void{
+//            recordOld = recordLocal
+//            let ttm = getTimeToMaturity(recordOld)
+//            calcEngine.timeToMaturity = ttm
+////            recordOldT0Updated = calcEngine.updateT0(recordOld)
+//            recordOldT0Updated = recordOld // temporary no update necessary, since no market data update yet.
+//            displayRecord(recordOldT0Updated)
+//        }
+//        
+//        storeEngine.loadRecordWeb(userName, completion: completionLoadRecordWeb)
+////        recordOld = storeEngine.loadRecord(userName)
+//        
+//    }
     
     func DismissKeyboard(){
         self.view.endEditing(true)
@@ -126,7 +140,7 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         
         if !(sender.text == "all")
         {
-        reductionAmount = min(recordOld.resultsT0.totalAsset, Util.str2double(cashOutAmount.text))
+        reductionAmount = min(recordOld.resultsT0.totalAsset, Util.str2double(cashOutAmount.text!))
         // validation: cashout-amount <= totalAsset
             cashOutAmount.text = reductionAmount.description
         }
@@ -193,14 +207,17 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         if (cashOutAmount.text == "all"){
             reductionAmount = recordOld.resultsT0.totalAsset
         }
-        var reductionRatio = 1.0 - reductionAmount/recordOld.resultsT0.totalAsset
+        let reductionRatio = 1.0 - reductionAmount/recordOld.resultsT0.totalAsset
         recordOld.resultsT0.totalAsset = recordOld.resultsT0.totalAsset * reductionRatio
         recordOld.resultsT0.guaranteedPayout = recordOld.resultsT0.guaranteedPayout * reductionRatio
         
         if reductionAmount > 0 {
             recordOldT0Updated = calcEngine.updateT0(recordOld)
             displayRecord(recordOldT0Updated)
-            storeEngine.storeRecord(recordOldT0Updated, userName: userName.text)
+            store(recordOldT0Updated)
+            //storeEngine.storeRecord(recordOldT0Updated, userName: userName.text!)
+//            func saveSessionCompletion(res:String){ print(res) }
+//            storeEngine.storeRecordWeb(recordOldT0Updated, userName: userName.text!, completion: saveSessionCompletion)
             
             let investNowConfirmAlert = UIAlertController(
                 title: "Please confirm your order: Cash-out " + displayDouble(reductionAmount)+"€",
@@ -230,7 +247,7 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         let endDate = dateFormater.dateFromString(maturityStr)
         let cal = NSCalendar.currentCalendar()
 //        let unit:NSCalendarUnit = .CalenderUnitDay
-        let components = cal.components(NSCalendarUnit.CalendarUnitDay, fromDate: startDate, toDate: endDate!, options: nil)
+        let components = cal.components(NSCalendarUnit.Day, fromDate: startDate, toDate: endDate!, options: [])
         
         let timeToMaturityProxy = Double(components.day) / 365.0
         return timeToMaturityProxy
@@ -240,10 +257,10 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         let confirmAlert=UIAlertController(
             title: "Confirmation", message: "Your order has been excecuted sussccesfully", preferredStyle: UIAlertControllerStyle.ActionSheet)
         
-        let actionOk = UIAlertAction(title: "Continue to explore", style:UIAlertActionStyle.Default, handler: {(action: UIAlertAction!) -> Void in println("do nothing")})
+        let actionOk = UIAlertAction(title: "Continue to explore", style:UIAlertActionStyle.Default, handler: {(action: UIAlertAction) -> Void in print("do nothing")})
         confirmAlert.addAction(actionOk)
 
-        let actionLogout = UIAlertAction(title: "Save & Logout", style:UIAlertActionStyle.Default, handler: {(action:UIAlertAction!) -> Void in
+        let actionLogout = UIAlertAction(title: "Save & Logout", style:UIAlertActionStyle.Default, handler: {(action:UIAlertAction) -> Void in
             self.performSegueWithIdentifier("saveSessionLogOut", sender: self)})
         confirmAlert.addAction(actionLogout)
 
@@ -252,13 +269,13 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
     }
     
     private func testConnectWebService(){
-        var xmlText = "<?xml version=\"1.0\" standalone=\"yes\"?>        <inputParameters><parameter name=\"userID\" type=\"typedValue\">S\tFinSol_User</parameter></inputParameters>"
+        let xmlText = "<?xml version=\"1.0\" standalone=\"yes\"?>        <inputParameters><parameter name=\"userID\" type=\"typedValue\">S\tFinSol_User</parameter></inputParameters>"
         let length = xmlText.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
         
-        var linkUrl = "http://65.52.141.177:5000/QwbWebService/Ergo/InitialPolicyInfo/"
+        let linkUrl = "http://65.52.141.177:5000/QwbWebService/Ergo/InitialPolicyInfo/"
         
-        var url: NSURL = NSURL(string: linkUrl)!
-        println(url)
+        let url: NSURL = NSURL(string: linkUrl)!
+        print(url)
         
         //        let request = NSURLRequest(URL: url)
         let request = NSMutableURLRequest(URL: url)
@@ -266,9 +283,15 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         request.HTTPBody = xmlText.dataUsingEncoding(NSUTF8StringEncoding)
         request.setValue("text/xml", forHTTPHeaderField: "Content-Type")
         request.setValue(length.description, forHTTPHeaderField: "Content-Length")
-        var response : AutoreleasingUnsafeMutablePointer <NSURLResponse?> = nil
-        var err : NSErrorPointer = nil
-        var data = NSURLConnection.sendSynchronousRequest(request, returningResponse: response, error: err)
+        let response : AutoreleasingUnsafeMutablePointer <NSURLResponse?> = nil
+        let err : NSErrorPointer = nil
+        var data: NSData?
+        do {
+            data = try NSURLConnection.sendSynchronousRequest(request, returningResponse: response)
+        } catch let error as NSError {
+            err.memory = error
+            data = nil
+        }
         //        (request, returningResponse: response, error: err)
         
         //        let task = NSURLSession.sharedSession().dataTaskWithRequest(request)
@@ -296,11 +319,12 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         
         //storeEngine.storeRecord(recordOld, userName: userName.text)
         func saveSessionCompletion(res:String){
-            println(res)
+            print(res)
+            loadAndUpdateT0(userName.text!)
+
         }
-        storeEngine.storeRecordWeb(recordOld, userName: userName.text, completion: saveSessionCompletion)
-        loadAndUpdateT0(userName.text)
-        
+//        storeEngine.storeRecordWeb(recordOld, userName: userName.text!, completion: saveSessionCompletion)
+        store(recordOld)
         
         let investNowConfirmAlert = UIAlertController(
             title: "General Investment Agreement",
@@ -319,11 +343,10 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
     
     @IBAction func saveSession(sender: UIButton) {
 //        storeEngine.storeRecord(recordOldT0Updated, userName: userName.text)
-        func saveSessionCompletion(res:String){
-            println(res)
-        }
-        storeEngine.storeRecordWeb(recordOldT0Updated, userName: userName.text, completion: saveSessionCompletion)
-        loadAndUpdateT0(userName.text)
+//        func saveSessionCompletion(res:String){ print(res) }
+//        storeEngine.storeRecordWeb(recordOldT0Updated, userName: userName.text!, completion: saveSessionCompletion)
+        store(recordOldT0Updated)
+        loadAndUpdateT0(userName.text!)
         performSegueWithIdentifier("saveSessionLogOut", sender: self)
     }
     
@@ -336,8 +359,10 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         func simulateCompletion(recordLocal:Record){
             recordNew = recordLocal
             displayRecord(recordNew)
-
+            activityIndicator.stopAnimating()
         }
+        activityIndicator.startAnimating()
+        activityIndicator.hidden=false
         calcEngine.simulateWeb(recordOldT0Updated, completion: simulateCompletion)
         
         DismissKeyboard()
@@ -398,8 +423,48 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
     }
     
     private func displayDouble(d:Double)-> String{
-        var s:String = String(format:"%.1f", d)
+        let s:String = String(format:"%.1f", d)
         return s
+    }
+    
+    private func store(recordToStore : Record){
+        if userName.text == StaticDefaults.playaroundAccountName {  // playaround account will be stored locally
+            storeEngine.storeRecord(recordToStore, userName: userName.text!)
+        }else{
+            func saveSessionCompletion(res:String){
+                print(res)
+                activityIndicator.stopAnimating()
+            }
+            activityIndicator.startAnimating()
+            activityIndicator.hidden=false
+            storeEngine.storeRecordWeb(recordToStore, userName: userName.text!, completion: saveSessionCompletion)
+
+        }
+    }
+    
+    private func load(id : String)->Record{
+        var record = Record()
+        if userName.text == StaticDefaults.playaroundAccountName   // playaround account will be stored locally
+        {
+            record = storeEngine.loadRecord(id)
+            displayRecord(record)
+        }
+        else
+        {
+            func completionLoadRecordWeb(recordLocal:Record)->Void{
+                record = recordLocal
+                let ttm = getTimeToMaturity(recordOld)
+                calcEngine.timeToMaturity = ttm
+                //            recordOldT0Updated = calcEngine.updateT0(recordOld)    // temporary no update necessary, since no market data update yet.
+                displayRecord(record)
+                activityIndicator.stopAnimating()
+            }
+            activityIndicator.startAnimating()
+            activityIndicator.hidden=false
+            storeEngine.loadRecordWeb(id, completion: completionLoadRecordWeb)
+            
+        }
+        return record
     }
     
     override func shouldAutorotate() -> Bool {
@@ -411,7 +476,8 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         }
     }
     
-    override func supportedInterfaceOrientations() -> Int {
-        return Int(UIInterfaceOrientationMask.Portrait.rawValue) | Int(UIInterfaceOrientationMask.PortraitUpsideDown.rawValue)
-    }
+    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
+        return UIInterfaceOrientationMask.Portrait  }
+    
+    
 }

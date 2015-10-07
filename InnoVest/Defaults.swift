@@ -20,12 +20,15 @@ class StaticDefaults{
     
     static let urlSaveRecord = url0+"SaveSession/"
     
+    static let urlRegisterNewAccount = url0 + "InitialPolicyInfo/"
     
     static let responseXmlLevel1 = "qwbWebService"
     
     static let responseXmlLevel2 = "results"
     
     static let responseXmlLevel3 = "result"
+    
+    static let playaroundAccountName = "playaround"
     
 }
 

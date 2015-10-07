@@ -28,7 +28,7 @@ class AlamorfirePlayaround{
 //            "Content-Type": "text/xml"
 //        ]
         
-        let custom: (URLRequestConvertible, [String: AnyObject]?) -> (NSURLRequest, NSError?) = {
+        let custom: (URLRequestConvertible, [String: AnyObject]?) -> (NSMutableURLRequest, NSError?) = {
             (URLRequest, parameters) in
             let mutableURLRequest = URLRequest.URLRequest.mutableCopy() as! NSMutableURLRequest
             mutableURLRequest.setValue("text/xml; charset=utf-8", forHTTPHeaderField: "Content-Type")
@@ -39,12 +39,12 @@ class AlamorfirePlayaround{
 
         
         Alamofire.request(.POST, url, parameters: Dictionary(), encoding: .Custom(custom)).responseString
-            { (request, response, string, error) in
-                println(request)
-                println(response)
-                println(string)
-                println(error)
-                strOut = string!
+            { response in
+                print(response.request)
+                print(response.response)
+                print(response.result.value)
+                print(response.result.error)
+                strOut = response.result.value!
                 textBox.text = strOut
                 Util.writeToDocumentsFile("UserRecord.xml", fileContent: strOut)
                 var param = self.proceedXMLText(strOut)
@@ -57,10 +57,10 @@ class AlamorfirePlayaround{
     }
     private static func proceedXMLText(xmlText:String) -> [String:String]{
         var param = [String:String]()
-        var xml = SWXMLHash.parse(xmlText)
+        let xml = SWXMLHash.parse(xmlText)
         if let resultText = xml["qwbWebService"]["results"]["result"].element?.text
         {
-            println(resultText)
+            print(resultText)
             param = text2Param(resultText)
         }
         return param
@@ -68,10 +68,10 @@ class AlamorfirePlayaround{
     private static func text2Param(text:String)->[String:String]
     {
         var param = [String:String]()
-        var lines = split(text){$0=="\n"}
+        let lines = text.characters.split{$0=="\n"}.map { String($0) }
         for line in lines
         {
-            var words = split(line){$0=="\t"}
+            var words = line.characters.split{$0=="\t"}.map { String($0) }
             param[words[0]]=words[1]
         }
         

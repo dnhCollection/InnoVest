@@ -47,7 +47,7 @@ class EntryVC: UIViewController {
     }
     
     func sequeToMainView(alert: UIAlertAction!){
-        self.defaults.setObject("FinSol_User", forKey: "userName")
+        self.defaults.setObject(StaticDefaults.playaroundAccountName, forKey: "userName")
         performSegueWithIdentifier("showMainView", sender: nil)
 //        println("test foo")
     }
@@ -64,9 +64,9 @@ class EntryVC: UIViewController {
         }
 
         let action2 = UIAlertAction(title: "Login", style: UIAlertActionStyle.Default,
-            handler: {(action: UIAlertAction!) -> Void in
-                let tf = loginAlert.textFields?.first as? UITextField
-                if tf != nil {self.userName = tf!.text}
+            handler: {(action: UIAlertAction) -> Void in
+                let tf = loginAlert.textFields?.first as? UITextField!
+                //if tf != nil {self.userName = tf!.text}
                 if tf != nil {self.defaults.setObject(tf!.text, forKey: "userName")}
                 self.performSegueWithIdentifier("showMainView", sender: nil)
         })

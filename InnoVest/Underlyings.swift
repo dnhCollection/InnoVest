@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum Underlyings: String, Printable{
+enum Underlyings: String, CustomStringConvertible{
     
     case germanStocks = "German Stocks Mix"
     case euroStocks = "European Stocks Mix"

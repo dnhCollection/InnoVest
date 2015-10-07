@@ -23,20 +23,39 @@ class Util{
     
     static func getSimulateXmlRequest(record:Record, valDateStr:String) -> String
     {
-        var paramBody = getRecordXmlBodyForSimulateRequest(record, valDateStr: valDateStr)
-        var xmlText = XmlDefaults.xmlHead + XmlDefaults.inputParametersHead + paramBody + XmlDefaults.inputParametersTail
+        let paramBody = getRecordXmlBodyForSimulateRequest(record, valDateStr: valDateStr)
+        let xmlText = XmlDefaults.xmlHead + XmlDefaults.inputParametersHead + paramBody + XmlDefaults.inputParametersTail
+        return xmlText
+    }
+    
+    static func getRegisterNewAccountXmlRequest(record:Record, valDateStr: String, userID: String)->String
+    {
+        let paramBody = getRecordXmlBodyForRegisterNewAccountRequest(record, valDateStr: valDateStr, userID: userID)
+        let xmlText = XmlDefaults.xmlHead + XmlDefaults.inputParametersHead + paramBody + XmlDefaults.inputParametersTail
         return xmlText
     }
     
     static func getSaveSessionXmlRequest(record:Record, valDateStr: String, userID: String)->String
     {
-        var paramBody = getRecordXmlBody(record, valDateStr: valDateStr, userID: userID)
-        var xmlText = XmlDefaults.xmlHead + XmlDefaults.inputParametersHead + paramBody + XmlDefaults.inputParametersTail
+        let paramBody = getRecordXmlBody(record, valDateStr: valDateStr, userID: userID)
+        let xmlText = XmlDefaults.xmlHead + XmlDefaults.inputParametersHead + paramBody + XmlDefaults.inputParametersTail
         return xmlText
     }
     
+    static func getRecordXmlBodyForRegisterNewAccountRequest(record:Record, valDateStr:String, userID: String)->String
+    {
+        let bodyXml = getXmlParamLine(SaveRecordFieldsEn.valuationDate, typeStr: "S", value: valDateStr)
+            + getXmlParamLine(SaveRecordFieldsEn.birthDate, typeStr: "S", value: record.userInfo.birthDate)
+            + getXmlParamLine(SaveRecordFieldsEn.maturityDate, typeStr: "S", value: record.userInfo.maturityDate)
+            + getXmlParamLine(SaveRecordFieldsEn.underlying, typeStr: "S", value: Record.defaultUnderlying)
+            + getXmlParamLine(SaveRecordFieldsEn.communication, typeStr: "S", value: record.userInfo.communication)
+            + getXmlParamLine(SaveRecordFieldsEn.address, typeStr: "S", value: record.userInfo.address)
+            + getXmlParamLine(SaveRecordFieldsEn.userID, typeStr: "S", value: userID)
+        return bodyXml
+    }
+    
     static func getRecordXmlBodyForSimulateRequest(record: Record, valDateStr: String)->String{
-        var bodyXml = getXmlParamLine(SaveRecordFieldsEn.valuationDate, typeStr: "S", value: valDateStr)
+        let bodyXml = getXmlParamLine(SaveRecordFieldsEn.valuationDate, typeStr: "S", value: valDateStr)
             + getXmlParamLine(SaveRecordFieldsEn.birthDate, typeStr: "S", value: record.userInfo.birthDate)
             + getXmlParamLine(SaveRecordFieldsEn.maturityDate, typeStr: "S", value: record.userInfo.maturityDate)
             + getXmlParamLine(SaveRecordFieldsEn.underlying, typeStr: "S", value: Record.defaultUnderlying)
@@ -54,7 +73,7 @@ class Util{
     
     static func getRecordXmlBody(record: Record, valDateStr:String, userID: String) -> String
     {
-        var bodyXml = getXmlParamLine(SaveRecordFieldsEn.valuationDate, typeStr: "S", value: valDateStr)
+        let bodyXml = getXmlParamLine(SaveRecordFieldsEn.valuationDate, typeStr: "S", value: valDateStr)
                     + getXmlParamLine(SaveRecordFieldsEn.userID, typeStr: "S", value: userID)
                     + getXmlParamLine(SaveRecordFieldsEn.birthDate, typeStr: "S", value: record.userInfo.birthDate)
                     + getXmlParamLine(SaveRecordFieldsEn.maturityDate, typeStr: "S", value: record.userInfo.maturityDate)
@@ -74,22 +93,6 @@ class Util{
         
         return bodyXml
     }
-    //<parameter name="valuationDate" type="typedValue">S	2015-07-07</parameter>
-    //<parameter name="underlyingMIF" type="typedValue">S	WorldStocks</parameter>
-    //<parameter name="birthDate" type="typedValue">S	1977-08-01</parameter>
-    //<parameter name="maturityDate" type="typedValue">S	2035-01-01</parameter>
-    //<parameter name="fundAssetT0" type="typedValue">D	 80.8636329858427</parameter>
-    //<parameter name="guaranteeAssetT0" type="typedValue">D	 16.7363670141572</parameter>
-    //<parameter name="guaranteeLevelT0" type="typedValue">D	 100</parameter>
-    //<parameter name="performanceT0" type="typedValue">D	 300.807226804884</parameter>
-    //<parameter name="communicationMedia" type="typedValue">S	SMS</parameter>
-    //<parameter name="address" type="typedValue">S	xxx</parameter>
-    //<parameter name="userID" type="typedValue">S	n217665</parameter>
-    //<parameter name="newSP" type="typedValue">D	 0</parameter>
-    //<parameter name="guaranteeLevelNewSP" type="typedValue">D	 0</parameter>
-    //<parameter name="triggerType" type="typedValue">S	Vertragsguthaben gestiegen um:</parameter>
-    //<parameter name="triggerThreshold" type="typedValue">D	 0</parameter>
-    
     
     static func getXmlParamLine(key: String, typeStr: String, value: String)-> String
     {
@@ -98,10 +101,8 @@ class Util{
         return xmlLine
     }
     
-    static func sendLoadRecordRequest(userName: String, completion: (recordLocal:Record)->Void)
-    {
-        let xmlTextContent = getLoadUserRecordXmlRequest(userName)
-        let custom: (URLRequestConvertible, [String: AnyObject]?) -> (NSURLRequest, NSError?) = {
+    private static func getConnectionCustom(xmlTextContent:String)->((URLRequestConvertible, [String: AnyObject]?) -> (NSMutableURLRequest, NSError?)){
+        let custom: (URLRequestConvertible, [String: AnyObject]?) -> (NSMutableURLRequest, NSError?) = {
             (URLRequest, parameters) in
             let mutableURLRequest = URLRequest.URLRequest.mutableCopy() as! NSMutableURLRequest
             mutableURLRequest.setValue("text/xml; charset=utf-8", forHTTPHeaderField: "Content-Type")
@@ -109,18 +110,57 @@ class Util{
             mutableURLRequest.HTTPBody = data
             return (mutableURLRequest, nil)
         }
+        return custom
+    }
+
+    private static func printResponse(response:Response<String, NSError>, xmlRequest: String, fn:String){
+        print(response.request)
+        print(response.response)
+        print(response.result.value)
+        print(response.result.error)
+        Util.writeToDocumentsFile(fn+"Request.xml", fileContent: xmlRequest)
+        Util.writeToDocumentsFile(fn+"Response.xml", fileContent: response.result.value!)
+    }
+//    static func sendXmlRequest<T>(xmlTextContent:String, url:String, completion: <T>(res:T)->Void, debugFileNameStr:String){
+//        let custom = getConnectionCustom(xmlTextContent)
+//        Alamofire.request(.POST, url, parameters: Dictionary(), encoding: .Custom(custom)).responseString
+//            { response in
+//                print(response.request)
+//                print(response.response)
+//                print(response.result.value)
+//                print(response.result.error)
+//                
+//                Util.writeToDocumentsFile(debugFileNameStr+"Request.xml", fileContent: xmlTextContent)
+//                Util.writeToDocumentsFile(debugFileNameStr+"Response.xml", fileContent: response.result.value!)
+//                completion(res: response.result.value!)
+//        }
+//    }
+    
+    static func sendSaveRecordRequest(record:Record, valDate: String, userName: String, completion: (res :String)->Void)
+    {
+        let xmlTextContent = getSaveSessionXmlRequest(record, valDateStr: valDate, userID: userName)
+        
+        
+        let url = StaticDefaults.urlSaveRecord
+        let custom = getConnectionCustom(xmlTextContent)
+        Alamofire.request(.POST, url, parameters: Dictionary(), encoding: .Custom(custom)).responseString
+            { response in
+                printResponse(response, xmlRequest: xmlTextContent, fn: "SaveSession")
+                completion(res: response.result.value!)
+        }
+        
+    }
+    
+    static func sendLoadRecordRequest(userName: String, completion: (recordLocal:Record)->Void)
+    {
+        let xmlTextContent = getLoadUserRecordXmlRequest(userName)
         
         let url = StaticDefaults.urlLoadRecord
-        
+        let custom = getConnectionCustom(xmlTextContent)
         Alamofire.request(.POST, url, parameters: Dictionary(), encoding: .Custom(custom)).responseString
-            { (request, response, responseStr, error) in
-                println(request)
-                println(response)
-                println(responseStr)
-                println(error)
-                Util.writeToDocumentsFile("LoadRecordRequest.xml", fileContent: responseStr!)
-//                var param = self.proceedXMLText(strOut)
-                let record = Util.xmlText2Record(responseStr!)
+            { response in
+                printResponse(response,xmlRequest: xmlTextContent,fn: "LocadRecord")
+                let record = Util.xmlText2Record(response.result.value!)
                 completion(recordLocal: record)
         }
 
@@ -129,58 +169,30 @@ class Util{
     static func sendSimulateRequest(record:Record, valDate: String, completion: (recordLocal:Record)->Void)
     {
         let xmlTextContent = getSimulateXmlRequest(record, valDateStr: valDate)
-        let custom: (URLRequestConvertible, [String: AnyObject]?) -> (NSURLRequest, NSError?) = {
-            (URLRequest, parameters) in
-            let mutableURLRequest = URLRequest.URLRequest.mutableCopy() as! NSMutableURLRequest
-            mutableURLRequest.setValue("text/xml; charset=utf-8", forHTTPHeaderField: "Content-Type")
-            let data = (xmlTextContent as NSString).dataUsingEncoding(NSUTF8StringEncoding)
-            mutableURLRequest.HTTPBody = data
-            return (mutableURLRequest, nil)
-        }
-        
         let url = StaticDefaults.urlSimulate
-        
+        let custom = getConnectionCustom(xmlTextContent)
         Alamofire.request(.POST, url, parameters: Dictionary(), encoding: .Custom(custom)).responseString
-            { (request, response, responseStr, error) in
-                println(request)
-                println(response)
-                println(responseStr)
-                println(error)
-                Util.writeToDocumentsFile("SimulateRequest.xml", fileContent: xmlTextContent)
-                Util.writeToDocumentsFile("SimulateResponse.xml", fileContent: responseStr!)
+            { response in
+                printResponse(response, xmlRequest: xmlTextContent,fn: "Simulate")
 
                 //                var param = self.proceedXMLText(strOut)
-                let record = Util.xmlText2Record(responseStr!)
+                let record = Util.xmlText2Record(response.result.value!)
                 completion(recordLocal: record)
         }
         
     }
 
     
-    static func sendSaveRecordRequest(record:Record, valDate: String, userName: String, completion: (res :String)->Void)
+    static func sendRegisterNewAccountRequest(record:Record, valDate: String, userName: String, completion: (res :String)->Void)
     {
-        let xmlTextContent = getSaveSessionXmlRequest(record, valDateStr: valDate, userID: userName)
-        let custom: (URLRequestConvertible, [String: AnyObject]?) -> (NSURLRequest, NSError?) = {
-            (URLRequest, parameters) in
-            let mutableURLRequest = URLRequest.URLRequest.mutableCopy() as! NSMutableURLRequest
-            mutableURLRequest.setValue("text/xml; charset=utf-8", forHTTPHeaderField: "Content-Type")
-            let data = (xmlTextContent as NSString).dataUsingEncoding(NSUTF8StringEncoding)
-            mutableURLRequest.HTTPBody = data
-            return (mutableURLRequest, nil)
-        }
+        let xmlTextContent = getRegisterNewAccountXmlRequest(record, valDateStr: valDate, userID: userName)
         
-        let url = StaticDefaults.urlSaveRecord
-        
+        let url = StaticDefaults.urlRegisterNewAccount
+        let custom = getConnectionCustom(xmlTextContent)
         Alamofire.request(.POST, url, parameters: Dictionary(), encoding: .Custom(custom)).responseString
-            { (request, response, responseStr, error) in
-                println(request)
-                println(response)
-                println(responseStr)
-                println(error)
-                
-                Util.writeToDocumentsFile("SaveSessionRequest.xml", fileContent: xmlTextContent)
-                Util.writeToDocumentsFile("SaveSessionResponse.xml", fileContent: responseStr!)
-                completion(res: responseStr!)
+            { (response) in
+                printResponse(response, xmlRequest: xmlTextContent,fn: "RegisterNewAccount")
+                completion(res: response.result.value!)
         }
         
     }
@@ -188,11 +200,11 @@ class Util{
     
     static func xmlText2Param(xmlText:String) -> [String:String]{
         var param = [String:String]()
-        var xml = SWXMLHash.parse(xmlText)
+        let xml = SWXMLHash.parse(xmlText)
 //        if let resultText = xml[Defaults.responseXmlLevel1][Defaults.responseXmlLevel2][Defaults.responseXmlLevel3].element?.text
         if let resultText = xml["qwbWebService"]["results"]["result"].element?.text
         {
-            println(resultText)
+            print(resultText)
             param = text2Param(resultText)
         }
         return param
@@ -208,10 +220,10 @@ class Util{
     private static func text2Param(text:String)->[String:String]
     {
         var param = [String:String]()
-        var lines = split(text){$0=="\n"}
+        let lines = text.characters.split{$0=="\n"}.map { String($0) }
         for line in lines
         {
-            var words = split(line){$0=="\t"}
+            var words = line.characters.split{$0=="\t"}.map { String($0) }
             if (words.count==1){
                 param[words[0]]=""
             }else{
@@ -269,7 +281,7 @@ class Util{
     
     static func param2record(param: [String:String])->Record{
 
-        var record = Record()
+        let record = Record()
         
         //UserInfo
         if param[RecordFieldsEN.userInfoTitle] == "yes"
@@ -314,7 +326,7 @@ class Util{
     
 
     static func param2userInfo(param: [String: String])-> UserInfo{
-        var userInfo = UserInfo()
+        let userInfo = UserInfo()
         userInfo.birthDate = param[RecordFieldsEN.birthDate]!
         userInfo.maturityDate = param[RecordFieldsEN.maturityDate]!
         userInfo.communication = param[RecordFieldsEN.communication]!
@@ -324,7 +336,7 @@ class Util{
     }
     
     static func param2resultsT0(param: [String: String])-> ResultsBase{
-        var resultsT0 = ResultsBase()
+        let resultsT0 = ResultsBase()
         resultsT0.fundAsset = str2double(param[RecordFieldsEN.fundAssetT0]!)
         resultsT0.guaranteeAsset = str2double(param[RecordFieldsEN.guaranteeAssetT0]!)
         resultsT0.totalAsset = resultsT0.fundAsset + resultsT0.guaranteeAsset
@@ -335,7 +347,7 @@ class Util{
     }
     
     static func param2resultsNewInv(param: [String: String])-> ResultsBase{
-        var resultsNewInv = ResultsBase()
+        let resultsNewInv = ResultsBase()
         resultsNewInv.fundAsset = str2double(param[RecordFieldsEN.fundAssetNewSP]!)
         resultsNewInv.guaranteeAsset = str2double(param[RecordFieldsEN.guaranteeAssetNewSP]!)
         resultsNewInv.totalAsset = resultsNewInv.fundAsset + resultsNewInv.guaranteeAsset
@@ -346,7 +358,7 @@ class Util{
     }
     
     static func param2resultsT1(param: [String: String])-> ResultsBase{
-        var resultsT1 = ResultsBase()
+        let resultsT1 = ResultsBase()
         resultsT1.fundAsset = str2double(param[RecordFieldsEN.fundAssetT1]!)
         resultsT1.guaranteeAsset = str2double(param[RecordFieldsEN.guaranteeAssetT1]!)
         resultsT1.totalAsset = resultsT1.fundAsset + resultsT1.guaranteeAsset
@@ -357,7 +369,7 @@ class Util{
     }
     
     static func param2triggerInfo(param: [String: String])-> TriggerInfo{
-        var triggerInfo = TriggerInfo()
+        let triggerInfo = TriggerInfo()
         triggerInfo.newInvSPEUR = str2double(param[RecordFieldsEN.newInvSPEUR]!)
         triggerInfo.newInvGLEUR = str2double(param[RecordFieldsEN.newInvGLEUR]!)
 //        triggerInfo.triggerType = param[RecordFieldsEN.]!
@@ -367,12 +379,15 @@ class Util{
     }
     
     static func writeToDocumentsFile(fileName:String,fileContent:String) {
-        if let dirs : [String] = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.AllDomainsMask, true) as? [String] {
+        if let dirs : [String] = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.AllDomainsMask, true){
             let dir = dirs[0] //documents directory
-            let path = dir.stringByAppendingPathComponent(fileName);
-            println("path = " + path)
-            //writing
-            fileContent.writeToFile(path, atomically: false, encoding: NSUTF8StringEncoding, error: nil);
+            let path = (dir as NSString).stringByAppendingPathComponent(fileName);
+            print("path = " + path)
+            do {
+                //writing
+                try fileContent.writeToFile(path, atomically: false, encoding: NSUTF8StringEncoding)
+            } catch _ {
+            };
             
         }
     }
