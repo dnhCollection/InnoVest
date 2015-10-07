@@ -86,7 +86,7 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         }
         
         //var strText = AlamorfirePlayaround.playAlamofire(userName)
-        loadAndUpdateT0(userName.text!)
+        load(userName.text!)
         
         cashOutAmount.placeholder = "0"
         
@@ -104,13 +104,13 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
     
     @IBAction func loadAndUpdateT0(sender: UIButton) {
         
-        loadAndUpdateT0(userName.text!)
+        load(userName.text!)
     }
     
-    private func loadAndUpdateT0(userName : String)
-    {
-        load(userName)
-    }
+//    private func loadAndUpdateT0(userName : String)
+//    {
+//        load(userName)
+//    }
 //    {
 //        var recordOld = Record()
 //        func completionLoadRecordWeb(recordLocal:Record)->Void{
@@ -317,13 +317,14 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         recordOld.resultsT0 = recordNew.resultsT1
         
         //storeEngine.storeRecord(recordOld, userName: userName.text)
-        func saveSessionCompletion(res:String){
-            print(res)
-            loadAndUpdateT0(userName.text!)
-
-        }
+//        func saveSessionCompletion(res:String){
+//            print(res)
+//            loadAndUpdateT0(userName.text!)
+//
+//        }
 //        storeEngine.storeRecordWeb(recordOld, userName: userName.text!, completion: saveSessionCompletion)
         store(recordOld)
+        load(userName.text!)
         
         let investNowConfirmAlert = UIAlertController(
             title: "General Investment Agreement",
@@ -345,7 +346,7 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
 //        func saveSessionCompletion(res:String){ print(res) }
 //        storeEngine.storeRecordWeb(recordOldT0Updated, userName: userName.text!, completion: saveSessionCompletion)
         store(recordOldT0Updated)
-        loadAndUpdateT0(userName.text!)
+        load(userName.text!)
         performSegueWithIdentifier("saveSessionLogOut", sender: self)
     }
     
