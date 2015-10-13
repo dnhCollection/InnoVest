@@ -62,17 +62,112 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         static let SequeMessageCashOut = "cashOutMessage"
         static let DefaultKeyUnderlying = "underlyingKey"
     }
+
+    
+    /**
+     feature "load"
+     */
+    @IBAction func loadAndUpdateT0(sender: UIButton) {
+        load(userName.text!)
+    }
+
+    
+    /**
+     feature "cash-out"
+     */
+    @IBAction func cashOut(sender: UIButton) {
+        
+        DismissKeyboard()
+        
+        if (cashOutAmount.text == "all"){
+            reductionAmount = recordOld.resultsT0.totalAsset
+        }
+        let reductionRatio = 1.0 - reductionAmount/recordOld.resultsT0.totalAsset
+        recordOld.resultsT0.totalAsset = recordOld.resultsT0.totalAsset * reductionRatio
+        recordOld.resultsT0.guaranteedPayout = recordOld.resultsT0.guaranteedPayout * reductionRatio
+        
+        if reductionAmount > 0 {
+            recordOldT0Updated = calcEngine.updateT0(recordOld)
+            displayRecord(recordOldT0Updated)
+            store(recordOldT0Updated)
+            
+            let investNowConfirmAlert = UIAlertController(
+                title: "Please confirm your order: Cash-out " + displayDouble(reductionAmount)+"€",
+                message: "",
+                preferredStyle: UIAlertControllerStyle.Alert
+            )
+            let actionAgree = UIAlertAction(title: "Confirm", style: UIAlertActionStyle.Default, handler: confirm)
+            investNowConfirmAlert.addAction(actionAgree)
+            
+            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil)
+            investNowConfirmAlert.addAction(actionCancel)
+            
+            presentViewController(investNowConfirmAlert, animated: true, completion: nil)
+            
+            cashOutAmount.text = "0"
+            reductionAmount = 0
+        }
+        
+    }
+
+    
+    /**
+     feature "Simulate/Illustrate"
+     */
+    @IBAction func simulate(sender: UIButton) {
+        setInfo()
+        func simulateCompletion(recordLocal:Record){
+            recordNew = recordLocal
+            displayRecord(recordNew)
+            actInd.hideActivityIndicator(self.view)
+        }
+        actInd.showActivityIndicator(self.view)
+        calcEngine.simulateWeb(recordOldT0Updated, completion: simulateCompletion)
+        
+        DismissKeyboard()
+    }
+    
+    
+    /**
+     feature "Invest-Now"
+    */
+    @IBAction func investNow(sender: UIButton) {
+        recordOld.resultsT0 = recordNew.resultsT1
+        recordOldT0Updated = recordOld  // in a later version, T0 record should be update at this place
+        store(recordOldT0Updated)
+        load(userName.text!)
+        
+        let investNowConfirmAlert = UIAlertController(
+            title: "General Investment Agreement",
+            message: "Your are going to order a new investment of " + displayDouble(recordNew.triggerInfo.newInvSPEUR) + "€."+"\n Do you agree with the General Investment Agreement? \n(You can read the complete text of the General Investment Agreement under the link: ***)",
+            preferredStyle: UIAlertControllerStyle.Alert
+        )
+        let actionAgree = UIAlertAction(title: "Agree", style: UIAlertActionStyle.Default, handler: confirm)
+        investNowConfirmAlert.addAction(actionAgree)
+        
+        let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil)
+        investNowConfirmAlert.addAction(actionCancel)
+        
+        presentViewController(investNowConfirmAlert, animated: true, completion: nil)
+        
+    }
+    
+    /**
+     feature "Save-Session"
+    */
+    @IBAction func saveSession(sender: UIButton) {
+        store(recordOldT0Updated)
+        load(userName.text!)
+        performSegueWithIdentifier("saveSessionLogOut", sender: self)
+    }
+    
     
 
+
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        activityIndicator.hidesWhenStopped = true
-//        activityIndicator.hidden = true
-//        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
-        
-        
         
         userName.text = defaults.stringForKey("userName")
         userName.userInteractionEnabled = false
@@ -101,31 +196,49 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         self.userName.delegate = self
         
     }
-    
-    @IBAction func loadAndUpdateT0(sender: UIButton) {
-        
-        load(userName.text!)
+
+
+    private func store(recordToStore : Record){
+        if userName.text == StaticDefaults.playaroundAccountName {  // playaround account will be stored locally
+            storeEngine.storeRecord(recordToStore, userName: userName.text!)
+        }else{
+            func saveSessionCompletion(res:String){
+                print(res)
+                actInd.hideActivityIndicator(self.view)
+            }
+            actInd.showActivityIndicator(self.view)
+            storeEngine.storeRecordWeb(recordToStore, userName: userName.text!, completion: saveSessionCompletion)
+            
+        }
     }
     
-//    private func loadAndUpdateT0(userName : String)
-//    {
-//        load(userName)
-//    }
-//    {
-//        var recordOld = Record()
-//        func completionLoadRecordWeb(recordLocal:Record)->Void{
-//            recordOld = recordLocal
-//            let ttm = getTimeToMaturity(recordOld)
-//            calcEngine.timeToMaturity = ttm
-////            recordOldT0Updated = calcEngine.updateT0(recordOld)
-//            recordOldT0Updated = recordOld // temporary no update necessary, since no market data update yet.
-//            displayRecord(recordOldT0Updated)
-//        }
-//        
-//        storeEngine.loadRecordWeb(userName, completion: completionLoadRecordWeb)
-////        recordOld = storeEngine.loadRecord(userName)
-//        
-//    }
+    
+    private func load(id : String)->Record{
+        var record = Record()
+        if userName.text == StaticDefaults.playaroundAccountName   // playaround account will be stored locally
+        {
+            self.recordOld = storeEngine.loadRecord(id)
+            self.recordOldT0Updated = self.recordOld
+            displayRecord(self.recordOldT0Updated)
+        }
+        else
+        {
+            func completionLoadRecordWeb(recordLocal:Record)->Void{
+                self.recordOld = recordLocal
+                calcEngine.timeToMaturity = getTimeToMaturity(recordOld)
+                //            recordOldT0Updated = calcEngine.updateT0(recordOld)    // temporary no update necessary, since no market data update yet.
+                self.recordOldT0Updated = self.recordOld
+                displayRecord(self.recordOldT0Updated)
+                actInd.hideActivityIndicator(self.view)
+            }
+            actInd.showActivityIndicator(self.view)
+            storeEngine.loadRecordWeb(id, completion: completionLoadRecordWeb)
+        }
+        return record
+    }
+    
+
+    
     
     func DismissKeyboard(){
         self.view.endEditing(true)
@@ -140,8 +253,7 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         if !(sender.text == "all")
         {
         reductionAmount = min(recordOld.resultsT0.totalAsset, Util.str2double(cashOutAmount.text!))
-        // validation: cashout-amount <= totalAsset
-            cashOutAmount.text = reductionAmount.description
+        cashOutAmount.text = reductionAmount.description
         }
     }
     
@@ -199,43 +311,6 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         return UIModalPresentationStyle.None
     }
     
-    @IBAction func cashOut(sender: UIButton) {
-        
-        DismissKeyboard()
-        
-        if (cashOutAmount.text == "all"){
-            reductionAmount = recordOld.resultsT0.totalAsset
-        }
-        let reductionRatio = 1.0 - reductionAmount/recordOld.resultsT0.totalAsset
-        recordOld.resultsT0.totalAsset = recordOld.resultsT0.totalAsset * reductionRatio
-        recordOld.resultsT0.guaranteedPayout = recordOld.resultsT0.guaranteedPayout * reductionRatio
-        
-        if reductionAmount > 0 {
-            recordOldT0Updated = calcEngine.updateT0(recordOld)
-            displayRecord(recordOldT0Updated)
-            store(recordOldT0Updated)
-            //storeEngine.storeRecord(recordOldT0Updated, userName: userName.text!)
-//            func saveSessionCompletion(res:String){ print(res) }
-//            storeEngine.storeRecordWeb(recordOldT0Updated, userName: userName.text!, completion: saveSessionCompletion)
-            
-            let investNowConfirmAlert = UIAlertController(
-                title: "Please confirm your order: Cash-out " + displayDouble(reductionAmount)+"€",
-                message: "",
-                preferredStyle: UIAlertControllerStyle.Alert
-            )
-            let actionAgree = UIAlertAction(title: "Confirm", style: UIAlertActionStyle.Default, handler: confirm)
-            investNowConfirmAlert.addAction(actionAgree)
-            
-            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil)
-            investNowConfirmAlert.addAction(actionCancel)
-            
-            presentViewController(investNowConfirmAlert, animated: true, completion: nil)
-            
-            cashOutAmount.text = "0"
-            reductionAmount = 0
-        }
-
-    }
     
 
     private func getTimeToMaturity(record: Record)-> Double {
@@ -267,7 +342,7 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         presentViewController(confirmAlert, animated: true, completion: nil)
     }
     
-    private func testConnectWebService(){
+    private static func testConnectWebService(){
         let xmlText = "<?xml version=\"1.0\" standalone=\"yes\"?>        <inputParameters><parameter name=\"userID\" type=\"typedValue\">S\tFinSol_User</parameter></inputParameters>"
         let length = xmlText.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
         
@@ -291,85 +366,8 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
             err.memory = error
             data = nil
         }
-        //        (request, returningResponse: response, error: err)
-        
-        //        let task = NSURLSession.sharedSession().dataTaskWithRequest(request)
-        //            {
-        //            data, response, error in
-        //
-        //            if error != nil{
-        //                println("error = \(error)")
-        //                return
-        //            }
-        //
-        //            println("response = \(response)")
-        //
-        //            let responseString = NSString(data: data, encoding: NSUTF8StringEncoding)
-        //            println("responseString = \(responseString)")
-        //        }
-        //        task.resume()
-        
-        //        var isOk = xmlText.writeToURL(imgURL, atomically: true, encoding: NSUTF8StringEncoding, error: nil)
-
     }
     
-    @IBAction func investNow(sender: UIButton) {
-        recordOld.resultsT0 = recordNew.resultsT1
-        
-        //storeEngine.storeRecord(recordOld, userName: userName.text)
-//        func saveSessionCompletion(res:String){
-//            print(res)
-//            loadAndUpdateT0(userName.text!)
-//
-//        }
-//        storeEngine.storeRecordWeb(recordOld, userName: userName.text!, completion: saveSessionCompletion)
-        store(recordOld)
-        load(userName.text!)
-        
-        let investNowConfirmAlert = UIAlertController(
-            title: "General Investment Agreement",
-            message: "Your are going to order a new investment of " + displayDouble(recordNew.triggerInfo.newInvSPEUR) + "€."+"\n Do you agree with the General Investment Agreement? \n(You can read the complete text of the General Investment Agreement under the link: ***)",
-            preferredStyle: UIAlertControllerStyle.Alert
-        )
-        let actionAgree = UIAlertAction(title: "Agree", style: UIAlertActionStyle.Default, handler: confirm)
-        investNowConfirmAlert.addAction(actionAgree)
-        
-        let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil)
-        investNowConfirmAlert.addAction(actionCancel)
-        
-        presentViewController(investNowConfirmAlert, animated: true, completion: nil)
-
-    }
-    
-    @IBAction func saveSession(sender: UIButton) {
-//        storeEngine.storeRecord(recordOldT0Updated, userName: userName.text)
-//        func saveSessionCompletion(res:String){ print(res) }
-//        storeEngine.storeRecordWeb(recordOldT0Updated, userName: userName.text!, completion: saveSessionCompletion)
-        store(recordOldT0Updated)
-        load(userName.text!)
-        performSegueWithIdentifier("saveSessionLogOut", sender: self)
-    }
-    
-  
-    @IBAction func simulate(sender: UIButton) {
-        setInfo()
-        
-//        recordNew = calcEngine.simulate(recordOldT0Updated)
-        
-        func simulateCompletion(recordLocal:Record){
-            recordNew = recordLocal
-            displayRecord(recordNew)
-            //activityIndicator.stopAnimating()
-            actInd.hideActivityIndicator(self.view)
-        }
-//        activityIndicator.startAnimating()
-//        activityIndicator.hidden=false
-        actInd.showActivityIndicator(self.view)
-        calcEngine.simulateWeb(recordOldT0Updated, completion: simulateCompletion)
-        
-        DismissKeyboard()
-        
-    }
  
     private func setInfo(){
         recordOldT0Updated.userInfo.birthDate = birthDate.text!
@@ -427,50 +425,6 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
     private func displayDouble(d:Double)-> String{
         let s:String = String(format:"%.1f", d)
         return s
-    }
-    
-    private func store(recordToStore : Record){
-        if userName.text == StaticDefaults.playaroundAccountName {  // playaround account will be stored locally
-            storeEngine.storeRecord(recordToStore, userName: userName.text!)
-        }else{
-            func saveSessionCompletion(res:String){
-                print(res)
-                //activityIndicator.stopAnimating()
-                actInd.hideActivityIndicator(self.view)
-            }
-            actInd.showActivityIndicator(self.view)
-//            activityIndicator.startAnimating()
-//            activityIndicator.hidden=false
-            storeEngine.storeRecordWeb(recordToStore, userName: userName.text!, completion: saveSessionCompletion)
-
-        }
-    }
-    
-    private func load(id : String)->Record{
-        var record = Record()
-        if userName.text == StaticDefaults.playaroundAccountName   // playaround account will be stored locally
-        {
-            record = storeEngine.loadRecord(id)
-            displayRecord(record)
-        }
-        else
-        {
-            func completionLoadRecordWeb(recordLocal:Record)->Void{
-                record = recordLocal
-                let ttm = getTimeToMaturity(recordOld)
-                calcEngine.timeToMaturity = ttm
-                //            recordOldT0Updated = calcEngine.updateT0(recordOld)    // temporary no update necessary, since no market data update yet.
-                displayRecord(record)
-                actInd.hideActivityIndicator(self.view)
-//                activityIndicator.stopAnimating()
-            }
-            actInd.showActivityIndicator(self.view)
-//            activityIndicator.startAnimating()
-//            activityIndicator.hidden=false
-            storeEngine.loadRecordWeb(id, completion: completionLoadRecordWeb)
-            
-        }
-        return record
     }
     
     override func shouldAutorotate() -> Bool {
