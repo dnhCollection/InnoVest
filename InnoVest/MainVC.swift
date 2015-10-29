@@ -23,7 +23,10 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
     @IBOutlet weak var newInvSPEURInput: UITextField!
     @IBOutlet weak var newInvGLEURInput: UITextField!
     
-    @IBOutlet weak var underlyingDisplay: UILabel!
+    
+    @IBOutlet weak var underlyingButton: UIButton!
+    @IBOutlet weak var valDateField: UITextField!
+    
     
     @IBOutlet weak var fundAssetT0Display: UILabel!
     @IBOutlet weak var guaranteeAssetT0Display: UILabel!
@@ -46,7 +49,8 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
     
     let defaults = NSUserDefaults.standardUserDefaults()
     let actInd = ActivityIndicatorUtil()
-    
+
+    var valDate = NSDate()
     var isWebService = false
     
     var recordOld = Record()
@@ -68,7 +72,7 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
      feature "load"
      */
     @IBAction func loadAndUpdateT0(sender: UIButton) {
-        load(userName.text!)
+        load(userName.text!, valDate: valDate)
     }
 
     
@@ -79,42 +83,57 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         
         DismissKeyboard()
         
-        if (cashOutAmount.text == "all"){
-            reductionAmount = recordOld.resultsT0.totalAsset
-        }
-        let reductionRatio = 1.0 - reductionAmount/recordOld.resultsT0.totalAsset
-        recordOld.resultsT0.totalAsset = recordOld.resultsT0.totalAsset * reductionRatio
-        recordOld.resultsT0.guaranteedPayout = recordOld.resultsT0.guaranteedPayout * reductionRatio
-        
-        if reductionAmount > 0 {
-            recordOldT0Updated = calcEngine.updateT0(recordOld)
-            displayRecord(recordOldT0Updated)
-            store(recordOldT0Updated)
-            
-            let investNowConfirmAlert = UIAlertController(
+        let investNowConfirmAlert = UIAlertController(
                 title: "Please confirm your order: Cash-out " + displayDouble(reductionAmount)+"€",
                 message: "",
                 preferredStyle: UIAlertControllerStyle.Alert
-            )
-            let actionAgree = UIAlertAction(title: "Confirm", style: UIAlertActionStyle.Default, handler: confirm)
-            investNowConfirmAlert.addAction(actionAgree)
+        )
+        let actionAgree = UIAlertAction(title: "Confirm", style: UIAlertActionStyle.Default, handler: conductCashOut)
+        investNowConfirmAlert.addAction(actionAgree)
             
-            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil)
-            investNowConfirmAlert.addAction(actionCancel)
+        let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil)
+        investNowConfirmAlert.addAction(actionCancel)
             
-            presentViewController(investNowConfirmAlert, animated: true, completion: nil)
-            
-            cashOutAmount.text = "0"
-            reductionAmount = 0
-        }
-        
+        presentViewController(investNowConfirmAlert, animated: true, completion: nil)
+
     }
 
+    func conductCashOut(alert: UIAlertAction!)
+    {
+        if (cashOutAmount.text == "all"){
+            reductionAmount = recordOld.resultsT0.totalAsset
+        }
+        
+        if reductionAmount > 0
+        {
+        
+        let reductionRatio = 1.0 - reductionAmount/recordOld.resultsT0.totalAsset
+        recordOld.resultsT0.totalAsset = recordOld.resultsT0.totalAsset * reductionRatio
+        recordOld.resultsT0.fundAsset = recordOld.resultsT0.fundAsset * reductionRatio
+        recordOld.resultsT0.guaranteeAsset = recordOld.resultsT0.guaranteeAsset * reductionRatio
+        recordOld.resultsT0.guaranteedPayout = recordOld.resultsT0.guaranteedPayout * reductionRatio
+
+        func simulateCompletion(recordLocal:Record){
+            recordOldT0Updated.resultsT0 = recordLocal.resultsT1
+            displayRecord(recordOldT0Updated)
+            store(recordOldT0Updated, valDate:valDate)
+            actInd.hideActivityIndicator(self.view)
+            confirm(alert)
+        }
+        actInd.showActivityIndicator(self.view)
+        recordOld.triggerInfo = TriggerInfo()
+            calcEngine.simulateWeb(recordOld, valDate: valDate, completion: simulateCompletion)
+
+        cashOutAmount.text = "0"
+        reductionAmount = 0
+        }
+    }
     
     /**
      feature "Simulate/Illustrate"
      */
     @IBAction func simulate(sender: UIButton) {
+        DismissKeyboard()
         setInfo()
         func simulateCompletion(recordLocal:Record){
             recordNew = recordLocal
@@ -122,9 +141,7 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
             actInd.hideActivityIndicator(self.view)
         }
         actInd.showActivityIndicator(self.view)
-        calcEngine.simulateWeb(recordOldT0Updated, completion: simulateCompletion)
-        
-        DismissKeyboard()
+        calcEngine.simulateWeb(recordOldT0Updated, valDate: valDate, completion: simulateCompletion)
     }
     
     
@@ -132,17 +149,14 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
      feature "Invest-Now"
     */
     @IBAction func investNow(sender: UIButton) {
-        recordOld.resultsT0 = recordNew.resultsT1
-        recordOldT0Updated = recordOld  // in a later version, T0 record should be update at this place
-        store(recordOldT0Updated)
-        load(userName.text!)
+        
         
         let investNowConfirmAlert = UIAlertController(
             title: "General Investment Agreement",
             message: "Your are going to order a new investment of " + displayDouble(recordNew.triggerInfo.newInvSPEUR) + "€."+"\n Do you agree with the General Investment Agreement? \n(You can read the complete text of the General Investment Agreement under the link: ***)",
             preferredStyle: UIAlertControllerStyle.Alert
         )
-        let actionAgree = UIAlertAction(title: "Agree", style: UIAlertActionStyle.Default, handler: confirm)
+        let actionAgree = UIAlertAction(title: "Agree", style: UIAlertActionStyle.Default, handler: investNowConfirmed)
         investNowConfirmAlert.addAction(actionAgree)
         
         let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil)
@@ -152,17 +166,25 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         
     }
     
+    func conductInvestNow()
+    {
+        recordOldT0Updated.resultsT0 = recordNew.resultsT1  // in a later version, T0 record should be update at this place
+        store(recordOldT0Updated, valDate: valDate)
+        load(userName.text!, valDate: valDate)
+    }
+    
     /**
      feature "Save-Session"
     */
     @IBAction func saveSession(sender: UIButton) {
-        store(recordOldT0Updated)
-        load(userName.text!)
+        store(recordOldT0Updated, valDate: valDate)
+        load(userName.text!, valDate: valDate)
+        Util.writeToDocumentsFile(StaticDefaults.lastLoginFN, fileContent: userName.text!)
         performSegueWithIdentifier("saveSessionLogOut", sender: self)
     }
     
     
-
+    
 
     
     
@@ -176,16 +198,17 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         if let paramNewAccount = defaults.objectForKey("recordNewAccount") as? [String:String]{
             let recordNewAccount = Util.param2record(paramNewAccount)
             //storeEngine.storeRecord(recordNewAccount, userName: userName.text!)
-            store(recordNewAccount)
+            store(recordNewAccount, valDate: valDate)
             defaults.removeObjectForKey("recordNewAccount")
         }
         
-        //var strText = AlamorfirePlayaround.playAlamofire(userName)
-        load(userName.text!)
+        
+        load(userName.text!, valDate: valDate)
         
         cashOutAmount.placeholder = "0"
         
-        underlyingDisplay.text = Underlyings.germanStocks.description
+        let nowStr = Util.date2str(valDate)
+        //valDateField.placeholder = "2015-01-01"
         
         let tap:UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: "DismissKeyboard")
         self.view.addGestureRecognizer(tap)
@@ -198,22 +221,22 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
     }
 
 
-    private func store(recordToStore : Record){
+    private func store(recordToStore: Record, valDate: NSDate){
         if userName.text == StaticDefaults.playaroundAccountName {  // playaround account will be stored locally
-            storeEngine.storeRecord(recordToStore, userName: userName.text!)
+            storeEngine.storeRecord(recordToStore, valDate: valDate, userName: userName.text!)
         }else{
             func saveSessionCompletion(res:String){
                 print(res)
                 actInd.hideActivityIndicator(self.view)
             }
             actInd.showActivityIndicator(self.view)
-            storeEngine.storeRecordWeb(recordToStore, userName: userName.text!, completion: saveSessionCompletion)
+            storeEngine.storeRecordWeb(recordToStore, valDate: valDate, userName: userName.text!, completion: saveSessionCompletion)
             
         }
     }
     
     
-    private func load(id : String)->Record{
+    private func load(id : String, valDate: NSDate)->Record{
         var record = Record()
         if userName.text == StaticDefaults.playaroundAccountName   // playaround account will be stored locally
         {
@@ -232,7 +255,7 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
                 actInd.hideActivityIndicator(self.view)
             }
             actInd.showActivityIndicator(self.view)
-            storeEngine.loadRecordWeb(id, completion: completionLoadRecordWeb)
+            storeEngine.loadRecordWeb(id, valDate: valDate, completion: completionLoadRecordWeb)
         }
         return record
     }
@@ -265,6 +288,28 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         recordOldT0Updated.triggerInfo.newInvGLEUR = NSNumberFormatter().numberFromString(sender.text!)!.doubleValue
     }
 
+    @IBAction func editValDate(sender: UITextField) {
+//        valDate = Util.str2Date(sender.text!)
+    }
+    
+    @IBAction func editValDateBegin(sender: UITextField) {
+//        var customView:UIView = UIView(frame: CGRectMake(0, 100, 320, 160))
+//        customView.backgroundColor = UIColor.clearColor()
+//        
+//        var datePicker:UIDatePicker
+//        datePicker = UIDatePicker(frame: CGRectMake(0, 0, 320, 160))
+//        datePicker.datePickerMode = UIDatePickerMode.Date
+//        
+//        
+//        customView.addSubview(datePicker)
+//        valDateField.inputView = customView
+//        var doneButton:UIButton = UIButton (frame: CGRectMake(100, 100, 100, 44))
+//        doneButton.setTitle("Done", forState: UIControlState.Normal)
+//        doneButton.addTarget(self, action: "datePickerSelected", forControlEvents: UIControlEvents.TouchUpInside)
+//        doneButton.backgroundColor = UIColor .grayColor()
+//        valDateField.inputAccessoryView = doneButton
+    }
+    
     
     @IBAction func segueToUnderlying(sender: UIButton) {
         performSegueWithIdentifier("showUnderlying", sender: self)
@@ -272,14 +317,11 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
     
     @IBAction func goBack(segue: UIStoryboardSegue){
         let identifier = segue.identifier!
-        if let label = underlyingDisplay{
             switch identifier{
-            case "backFromGermanStocks": underlyingDisplay.text = Underlyings.germanStocks.description
-            case "backFromEuroStocks": underlyingDisplay.text = Underlyings.euroStocks.description
-            case"backFromWorldStocks": underlyingDisplay.text = Underlyings.worldStocks.description
-            default: underlyingDisplay.text = Underlyings.defaults.description
-            }
-            
+            case "backFromGermanStocks": underlyingButton.setTitle(Underlyings.germanStocks.description, forState: .Normal)
+            case "backFromEuroStocks": underlyingButton.setTitle(Underlyings.euroStocks.description, forState: .Normal)
+            case"backFromWorldStocks": underlyingButton.setTitle(Underlyings.worldStocks.description, forState: .Normal)
+            default: underlyingButton.setTitle(Underlyings.defaults.description, forState: .Normal)
         }
     }
     
@@ -325,6 +367,13 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         
         let timeToMaturityProxy = Double(components.day) / 365.0
         return timeToMaturityProxy
+    }
+    
+    
+    func investNowConfirmed(alert: UIAlertAction!)
+    {
+        conductInvestNow()
+        confirm(alert)
     }
     
     func confirm(alert: UIAlertAction!){
@@ -426,6 +475,7 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         let s:String = String(format:"%.1f", d)
         return s
     }
+
     
     override func shouldAutorotate() -> Bool {
         switch UIDevice.currentDevice().orientation {

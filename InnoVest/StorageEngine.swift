@@ -30,27 +30,28 @@ class StorageEngine {
     }
 
     
-    func loadRecordWeb(userName: String, completion:(recordLocal:Record)->Void){
-        Util.sendLoadRecordRequest(userName, completion: completion)
+    func loadRecordWeb(userName: String, valDate: NSDate, completion:(recordLocal:Record)->Void){
+        let valDateStr = Util.date2str(valDate)
+        Util.sendLoadRecordRequest(userName, valDateStr: valDateStr, completion: completion)
     }
     
     func registerNewAccountWeb(record: Record, userName: String, completion:(res:String)->Void){
-        let valDate = Util.date2str(NSDate())
-        Util.sendRegisterNewAccountRequest(record, valDate: valDate, userName: userName, completion: completion)
+        let valDateStr = Util.date2str() // today-now
+        Util.sendRegisterNewAccountRequest(record, valDateStr:valDateStr, userName: userName, completion: completion)
     }
     
-    func storeRecordWeb(record: Record, userName: String, completion:(res:String)->Void){
-        let valDate = Util.date2str(NSDate())
-        Util.sendSaveRecordRequest(record, valDate: valDate, userName: userName, completion: completion)
+    func storeRecordWeb(record: Record, valDate:NSDate, userName: String, completion:(res:String)->Void){
+        let valDateStr = Util.date2str(valDate)
+        Util.sendSaveRecordRequest(record, valDateStr: valDateStr, userName: userName, completion: completion)
     }
     
-    func storeRecord(recordIn: Record, userName : String){
+    func storeRecord(recordIn: Record, valDate: NSDate, userName : String){
         storeRecordInSession(recordIn)
         func completion(res:String){
             print(res)
         }
         if isWebService{
-            storeRecordWeb(recordIn, userName: userName, completion: completion)
+            storeRecordWeb(recordIn, valDate: valDate, userName: userName, completion: completion)
         }
         else{
             storeRecordLocal(recordIn, userName: userName)
@@ -58,13 +59,13 @@ class StorageEngine {
     }
     
     func getRecordLocal(userName: String)->Record{
-        let fileContent = readFromDocumentsFile(userName)
+        let fileContent = Util.readFromDocumentsFile(userName)
         if fileContent != "read file NOK"{
             let record = file2record(fileContent)
             return record
         }else{
             let record = Record()
-            storeRecord(record, userName: userName)
+            storeRecord(record, valDate:NSDate(), userName: userName)
             return record
         }
     }
@@ -147,23 +148,5 @@ class StorageEngine {
     
     
     
-    func readFromDocumentsFile(fileName:String) -> String
-    {
-        
-        var fileContent = "read file NOK"
-        if let dirs : [String] = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.AllDomainsMask, true) as? [String]
-        {
-            let dir = dirs[0] //documents directory
-            let path = (dir as NSString).stringByAppendingPathComponent(fileName+".txt");
 
-            print(dir)
-            print(path)
-            if let input = NSFileHandle(forReadingAtPath: path)
-            {
-                let scanner = StreamScanner(source: input, delimiters: NSCharacterSet(charactersInString: ":\n"))
-                fileContent = scanner.read()!
-            }
-        }
-        return fileContent
-    }
 }

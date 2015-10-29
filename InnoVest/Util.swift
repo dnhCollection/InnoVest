@@ -12,7 +12,7 @@ import Alamofire
 
 class Util{
     
-    static func getLoadUserRecordXmlRequest(userName: String) -> String
+    static func getLoadUserRecordXmlRequest(userName: String, valDateStr: String) -> String
     {
         let xmlTemplate1 = "<?xml version=\"1.0\" standalone=\"yes\"?>        <inputParameters><parameter name=\"userID\" type=\"typedValue\">S\t"
         let xmlTemplate2 = "</parameter></inputParameters>"
@@ -136,9 +136,9 @@ class Util{
 //        }
 //    }
     
-    static func sendSaveRecordRequest(record:Record, valDate: String, userName: String, completion: (res :String)->Void)
+    static func sendSaveRecordRequest(record:Record, valDateStr: String, userName: String, completion: (res :String)->Void)
     {
-        let xmlTextContent = getSaveSessionXmlRequest(record, valDateStr: valDate, userID: userName)
+        let xmlTextContent = getSaveSessionXmlRequest(record, valDateStr: valDateStr, userID: userName)
         
         
         let url = StaticDefaults.urlSaveRecord
@@ -151,9 +151,9 @@ class Util{
         
     }
     
-    static func sendLoadRecordRequest(userName: String, completion: (recordLocal:Record)->Void)
+    static func sendLoadRecordRequest(userName: String, valDateStr: String, completion: (recordLocal:Record)->Void)
     {
-        let xmlTextContent = getLoadUserRecordXmlRequest(userName)
+        let xmlTextContent = getLoadUserRecordXmlRequest(userName, valDateStr: valDateStr)
         
         let url = StaticDefaults.urlLoadRecord
         let custom = getConnectionCustom(xmlTextContent)
@@ -166,9 +166,9 @@ class Util{
 
     }
 
-    static func sendSimulateRequest(record:Record, valDate: String, completion: (recordLocal:Record)->Void)
+    static func sendSimulateRequest(record:Record, valDateStr: String, completion: (recordLocal:Record)->Void)
     {
-        let xmlTextContent = getSimulateXmlRequest(record, valDateStr: valDate)
+        let xmlTextContent = getSimulateXmlRequest(record, valDateStr: valDateStr)
         let url = StaticDefaults.urlSimulate
         let custom = getConnectionCustom(xmlTextContent)
         Alamofire.request(.POST, url, parameters: Dictionary(), encoding: .Custom(custom)).responseString
@@ -183,9 +183,9 @@ class Util{
     }
 
     
-    static func sendRegisterNewAccountRequest(record:Record, valDate: String, userName: String, completion: (res :String)->Void)
+    static func sendRegisterNewAccountRequest(record:Record, valDateStr: String, userName: String, completion: (res :String)->Void)
     {
-        let xmlTextContent = getRegisterNewAccountXmlRequest(record, valDateStr: valDate, userID: userName)
+        let xmlTextContent = getRegisterNewAccountXmlRequest(record, valDateStr: valDateStr, userID: userName)
         
         let url = StaticDefaults.urlRegisterNewAccount
         let custom = getConnectionCustom(xmlTextContent)
@@ -392,12 +392,48 @@ class Util{
         }
     }
     
+    static func readFromFile(fileName:String) -> String?{
+        return try? readFromDocumentsFile(fileName)
+    }
+    
+    static func readFromDocumentsFile(fileName:String) -> String
+    {
+        
+        var fileContent = ""
+        if let dirs : [String] = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.AllDomainsMask, true) as? [String]
+        {
+            let dir = dirs[0] //documents directory
+            let path = (dir as NSString).stringByAppendingPathComponent(fileName+".txt");
+            
+            print(dir)
+            print(path)
+            if let input = NSFileHandle(forReadingAtPath: path)
+            {
+                let scanner = StreamScanner(source: input, delimiters: NSCharacterSet(charactersInString: ":\n"))
+                fileContent = scanner.read()!
+            }
+        }
+        return fileContent
+    }
+    
+    
+    static func str2Date(dateStr:String)-> NSDate{
+        let formater = NSDateFormatter()
+        formater.dateFormat = "yyyy-MM-dd-HH-mm"
+        let dateOut = formater.dateFromString(dateStr)!
+        return dateOut
+    }
+    
     static func date2str(date: NSDate)-> String
     {
         let dateFormater = NSDateFormatter()
-        dateFormater.dateFormat = "yyyy-MM-dd"
+        dateFormater.dateFormat = "yyyy-MM-dd-HH-mm"
         let dateStr = dateFormater.stringFromDate(date)
         return dateStr
+    }
+    
+    static func date2str() -> String{
+        return self.date2str(NSDate())
     }
 }
 

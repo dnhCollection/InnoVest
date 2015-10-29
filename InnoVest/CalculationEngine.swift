@@ -52,9 +52,9 @@ class CalculationEngine {
         return Util.record2param(recordOldT0Updated)
     }
     
-    func simulateWeb(recordOld: Record, completion: (recordLocal:Record)->Void){
-        let valDate = Util.date2str(NSDate())
-        Util.sendSimulateRequest(recordOld, valDate: valDate, completion: completion)
+    func simulateWeb(recordOld: Record, valDate: NSDate, completion: (recordLocal:Record)->Void){
+        let valDateStr = Util.date2str(valDate)
+        Util.sendSimulateRequest(recordOld, valDateStr: valDateStr, completion: completion)
     }
     
     func simulate(recordOld: Record) -> Record{

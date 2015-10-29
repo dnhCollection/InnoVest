@@ -60,7 +60,16 @@ class EntryVC: UIViewController {
         )
         
         loginAlert.addTextFieldWithConfigurationHandler { (field:UITextField!) -> Void in
-            field.placeholder = "user name"
+            let lastUserName = Util.readFromDocumentsFile(StaticDefaults.lastLoginFN)
+            if lastUserName == ""
+            {
+                field.placeholder = lastUserName
+            }
+            else
+            {
+                field.placeholder = "user name"
+            }
+
         }
 
         let action2 = UIAlertAction(title: "Login", style: UIAlertActionStyle.Default,

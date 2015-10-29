@@ -30,6 +30,10 @@ class StaticDefaults{
     
     static let playaroundAccountName = "playaround"
     
+    static let lastLoginFN = "LastLogin"
+    
+    static let realFileError = "read file NOK"
+    
 }
 
 struct RecordFieldsEN{
