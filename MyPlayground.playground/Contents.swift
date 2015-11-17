@@ -4,14 +4,10 @@ import UIKit
 import Alamofire
 
 
-var str = "Hello, playground"
+let dateFormater = NSDateFormatter()
+dateFormater.dateFormat = "yyyy-MM-dd-HH-mm"
+let today = NSDate()
+let dateStr = dateFormater.stringFromDate(today)
 
-//Alamofire.request(.GET, "http://httpbin.org/get")
 
-
-
-Alamofire.request(.GET, "http://httpbin.org/get", parameters: ["foo": "bar"])
-    .responseString { (_, _, string, _) in
-        println(string)
-}
 

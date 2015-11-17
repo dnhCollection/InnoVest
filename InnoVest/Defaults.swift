@@ -10,7 +10,10 @@ import Foundation
 
 class StaticDefaults{
     
-    static let url0 = "http://mrmquandtws01.cloudapp.net:5000/QwbWebService/Ergo/"
+    static let url_A = "http://mrmquandtws01.cloudapp.net:5000/QwbWebService/Ergo/"
+    static let url_B = "http://mrmquandtws01.cloudapp.net:5080/QwbWebService/Ergo/"
+    
+    static let url0 = url_B
     
     static let urlTestPost = url0+"TestPost/"
     
@@ -50,6 +53,7 @@ struct RecordFieldsEN{
     static let totalAssetT0 = "Total Asset T0"
     static let guaranteedPayoutT0 = "Guaranteed Payout T0"
     static let projectedPayoutT0 = "Projected Payout T0"
+    static let numFundUnitsT0 = "numFundUnitsT0"
     
     static let resultsNewSPTitle = "Increase in Account after Top-Up"
     static let fundAssetNewSP = "Fund Asset NewSP"
@@ -64,6 +68,7 @@ struct RecordFieldsEN{
     static let totalAssetT1 = "Total Asset T1"
     static let guaranteedPayoutT1 = "Guaranteed Payout T1"
     static let projectedPayoutT1 = "Projected Payout T1"
+    static let numFundUnitsT1 = "numFundUnitsT1"
 
     static let triggerSetupTitle = "Trigger/Alert Setup"
     static let newInvSPEUR = "Top-Up Payment"
@@ -90,6 +95,7 @@ struct SaveRecordFieldsEn{
     static let totalAssetT0 = "totalAssetT0"
     static let guaranteedPayoutT0 = "guaranteeLevelT0"
     static let projectedPayoutT0 = "performanceT0"
+    static let numFundUnitsT0 = "numFundUnitsT0"
     
     static let newInvSPEUR = "newSP"
     static let newInvGLEUR = "guaranteeLevelNewSP"

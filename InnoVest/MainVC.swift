@@ -68,6 +68,40 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
     }
 
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        userName.text = defaults.stringForKey("userName")
+        userName.userInteractionEnabled = false
+        
+        // the following if-let block initialize the record storage in case of new Account
+        if let paramNewAccount = defaults.objectForKey("recordNewAccount") as? [String:String]{
+            let recordNewAccount = Util.param2record(paramNewAccount)
+            //storeEngine.storeRecord(recordNewAccount, userName: userName.text!)
+            store(recordNewAccount, valDate: valDate)
+            defaults.removeObjectForKey("recordNewAccount")
+        }
+        
+        
+        load(userName.text!, valDate: valDate)
+        
+        cashOutAmount.placeholder = "0"
+        
+        //        valDate = NSDate()
+        //        let nowStr = Util.date2str(valDate)
+        //valDateField.placeholder = "2015-01-01"
+        
+        let tap:UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: "DismissKeyboard")
+        self.view.addGestureRecognizer(tap)
+        
+        self.newInvSPEURInput.delegate = self
+        self.newInvGLEURInput.delegate = self
+        self.cashOutAmount.delegate = self
+        self.userName.delegate = self
+        
+    }
+    
+    
     /**
      feature "load"
      */
@@ -182,43 +216,7 @@ class MainVC: UIViewController, UITextFieldDelegate, UIPopoverPresentationContro
         Util.writeToDocumentsFile(StaticDefaults.lastLoginFN, fileContent: userName.text!)
         performSegueWithIdentifier("saveSessionLogOut", sender: self)
     }
-    
-    
-    
 
-    
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        userName.text = defaults.stringForKey("userName")
-        userName.userInteractionEnabled = false
-        
-        // the following if-let block initialize the record storage in case of new Account
-        if let paramNewAccount = defaults.objectForKey("recordNewAccount") as? [String:String]{
-            let recordNewAccount = Util.param2record(paramNewAccount)
-            //storeEngine.storeRecord(recordNewAccount, userName: userName.text!)
-            store(recordNewAccount, valDate: valDate)
-            defaults.removeObjectForKey("recordNewAccount")
-        }
-        
-        
-        load(userName.text!, valDate: valDate)
-        
-        cashOutAmount.placeholder = "0"
-        
-        let nowStr = Util.date2str(valDate)
-        //valDateField.placeholder = "2015-01-01"
-        
-        let tap:UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: "DismissKeyboard")
-        self.view.addGestureRecognizer(tap)
-        
-        self.newInvSPEURInput.delegate = self
-        self.newInvGLEURInput.delegate = self
-        self.cashOutAmount.delegate = self
-        self.userName.delegate = self
-        
-    }
 
 
     private func store(recordToStore: Record, valDate: NSDate){

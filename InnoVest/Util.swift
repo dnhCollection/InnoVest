@@ -61,6 +61,7 @@ class Util{
             + getXmlParamLine(SaveRecordFieldsEn.underlying, typeStr: "S", value: Record.defaultUnderlying)
             
             + getXmlParamLine(SaveRecordFieldsEn.fundAssetT0, typeStr: "D", value: record.resultsT0.fundAsset.description)
+            + getXmlParamLine(SaveRecordFieldsEn.numFundUnitsT0, typeStr: "D", value: record.resultsT0.numFundUnits.description)
             + getXmlParamLine(SaveRecordFieldsEn.guaranteeAssetT0, typeStr: "D", value: record.resultsT0.guaranteeAsset.description)
             + getXmlParamLine(SaveRecordFieldsEn.guaranteedPayoutT0, typeStr: "D", value: record.resultsT0.guaranteedPayout.description)
             
@@ -342,7 +343,7 @@ class Util{
         resultsT0.totalAsset = resultsT0.fundAsset + resultsT0.guaranteeAsset
         resultsT0.guaranteedPayout = str2double(param[RecordFieldsEN.guaranteedPayoutT0]!)
         resultsT0.projectedPayout = str2double(param[RecordFieldsEN.projectedPayoutT0]!)
-        
+        resultsT0.numFundUnits = str2double(param[RecordFieldsEN.numFundUnitsT0]!)
         return resultsT0
     }
     
@@ -364,7 +365,7 @@ class Util{
         resultsT1.totalAsset = resultsT1.fundAsset + resultsT1.guaranteeAsset
         resultsT1.guaranteedPayout = str2double(param[RecordFieldsEN.guaranteedPayoutT1]!)
         resultsT1.projectedPayout = str2double(param[RecordFieldsEN.projectedPayoutT1]!)
-        
+        resultsT1.numFundUnits = str2double(param[RecordFieldsEN.numFundUnitsT1]!)
         return resultsT1
     }
     
@@ -428,6 +429,8 @@ class Util{
     {
         let dateFormater = NSDateFormatter()
         dateFormater.dateFormat = "yyyy-MM-dd-HH-mm"
+        let today = NSDate()
+        let dateStrTest = dateFormater.stringFromDate(today)
         let dateStr = dateFormater.stringFromDate(date)
         return dateStr
     }

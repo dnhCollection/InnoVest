@@ -39,10 +39,11 @@ class Record{
 
 class ResultsBase{
     var fundAsset = 0.0
-    var guaranteeAsset=0.0
+    var guaranteeAsset = 0.0
     var totalAsset = 0.0
-    var guaranteedPayout=0.0
-    var projectedPayout=0.0
+    var guaranteedPayout = 0.0
+    var projectedPayout = 0.0
+    var numFundUnits = 0.0
     
     init(newInvSPEUR:Double, newInvGLEUR: Double){
         totalAsset = newInvSPEUR
